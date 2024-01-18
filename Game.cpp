@@ -2,6 +2,7 @@
 
 #include "Game.hpp"
 #include "Board.hpp"
+#include "Component.hpp"
 
 void Game::initWindow() {
 	this->settings.antialiasingLevel = 8;
@@ -36,6 +37,8 @@ void Game::initObjects() {
 
 void Game::initLogic() {
 	this->mouseHeld = false; //For detecting if the mouse button in held for more than one frame
+	this->click = false; //Stores if the mouse was pressed down this frame
+	this->heldComponent = NULL; //Stores a pointer to the currently held component (NULL if not holding a component)
 }
 
 void Game::initFonts() {
@@ -61,6 +64,14 @@ void Game::pollEvents() {
 			}
 		}
 	}
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		this->click = !this->mouseHeld;
+		this->mouseHeld = true;
+	}
+	else {
+		this->mouseHeld = false;
+		this->click = false;
+	}
 }
 
 void Game::updateMousePos() {
@@ -69,12 +80,120 @@ void Game::updateMousePos() {
 	this->mousePosView = this->window->mapPixelToCoords(this->mousePosWindow); //coordinate position of the mouse
 }
 
+void Game::updateComponents() {
+	if (this->heldComponent != NULL) { //Checks if there is a component being held
+		for (auto& e : this->components) {
+			if (e == this->heldComponent) {
+				e->moveTo(this->mousePosView);
+			}
+		}
+		if (!this->mouseHeld) {
+			bool placeComp = false;
+			int index = 0;
+
+			for (index; index < board->getNodesLength(); index++) {
+				if (board->checkIfIntersectingNode(index, this->mousePosView)) {
+					placeComp = true;
+					break;
+				}
+			}
+
+			if (placeComp) { //If the component is to be placed on a node
+				Component* oldComp = board->getNodeComponent(index);
+				board->setNodeComponent(index, this->heldComponent);
+
+				this->heldComponent->moveTo(this->board->getNodePosition(index));
+
+				std::cout << this->heldComponent->getSprite().getPosition().x << ", " << this->heldComponent->getSprite().getPosition().y << "\n";
+				std::cout << this->board->getNodePosition(index).x << ", " << this->board->getNodePosition(index).y << "\n\n";
+
+				this->heldComponent = oldComp;
+			}
+			deleteHeldComponent();
+		}
+	}
+	else {
+		for (auto& e : this->components) {
+			if (abs(e->getPos().x - this->mousePosView.x) <= 25.f && abs(e->getPos().y - this->mousePosView.y) <= 25.f) { //Checks if the mouse is within a square around the component
+				e->highlight();
+				if (this->mouseHeld && !e->getHeld()) {
+					this->heldComponent = e;
+					for (int i = 0; i < this->board->getNodesLength(); i++) {
+						if (e == this->board->getNodeComponent(i)) {
+							this->board->setNodeComponent(i, NULL);
+						}
+					}
+				}
+			}
+			else {
+				e->unhighlight();
+			}
+		}
+	}
+}
+
+void Game::UpdatePartsMenu() {
+	for (int i = 1; i < 8; i++) {
+		if (this->partsMenu[i].getGlobalBounds().contains(this->mousePosView)) {
+			if (this->click) {
+				Component* newComp;
+				switch (i) {
+				case 1:
+					newComp = new Ramp;
+					std::cout << "Made Ramp\n";
+					break;
+				case 2:
+					newComp = new Crossover;
+					std::cout << "Made Crossover\n";
+					break;
+				case 3:
+					newComp = new Interceptor;
+					std::cout << "Made Interceptor\n";
+					break;
+				case 4:
+					newComp = new Bit;
+					std::cout << "Made Bit\n";
+					break;
+				case 5:
+					newComp = new GearBit;
+					std::cout << "Made Gear Bit\n";
+					break;
+				case 6:
+					newComp = new Gear;
+					std::cout << "Made Gear\n";
+					break;
+				default:
+					newComp = new Ramp;
+				}
+				std::cout << newComp << "\n\n";
+				newComp->highlight();
+				this->components.push_back(newComp);
+				this->heldComponent = newComp;
+			}
+		}
+	}
+}
+
+void Game::deleteHeldComponent() {
+	for (int i = 0; i < this->components.size(); i++) {
+		if (this->components[i] == this->heldComponent) {
+			delete this->components[i];
+			this->components.erase(this->components.begin() + i);
+			this->heldComponent = NULL;
+		}
+	}
+}
+
 void Game::drawObjects() {
 	for (int i = 0; i < 8; i++) {
 		this->window->draw(this->partsMenu[i]);
 	}
 	this->window->draw(this->infoBox);
 	this->board->drawBoard(*this->window);
+
+	for (auto& e : this->components) {
+		this->window->draw(e->getSprite());
+	}
 }
 
 void Game::drawText() {
@@ -92,6 +211,9 @@ Game::Game() {
 Game::~Game() {
 	delete this->window;
 	delete this->board;
+	for (auto& e : this->components) {
+		delete e;
+	}
 }
 
 const bool Game::running() const {
@@ -101,6 +223,8 @@ const bool Game::running() const {
 void Game::update() {
 	this->pollEvents();
 	this->updateMousePos();
+	this->updateComponents();
+	this->UpdatePartsMenu();
 }
 
 void Game::render() {

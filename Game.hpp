@@ -3,6 +3,7 @@
 #include "source.hpp"
 
 class Board;
+class Component;
 
 class Game {
 private:
@@ -25,6 +26,8 @@ private:
 	//Game objects
 	sf::RectangleShape partsMenu[8];
 	sf::RectangleShape infoBox;
+
+	std::vector<Component*> components;
 	/*
 	buttons
 	components
@@ -38,6 +41,8 @@ private:
 
 	//logic
 	bool mouseHeld;
+	bool click;
+	Component* heldComponent;
 
 	//Private Functions
 	void initWindow();
@@ -49,7 +54,10 @@ private:
 	void pollEvents();
 	void updateMousePos();
 
+	void updateComponents();
+	void UpdatePartsMenu();
 
+	void deleteHeldComponent();
 
 	//render functions
 	void drawObjects();

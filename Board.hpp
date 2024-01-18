@@ -3,6 +3,7 @@
 #include "source.hpp"
 
 class Node;
+class Component;
 //class Graph;
 
 class Board {
@@ -38,12 +39,21 @@ private:
 	void drawHoppers(sf::RenderWindow& window);
 	void drawNodes(sf::RenderWindow& window);
 
+	bool checkValidIndexNodes(int index);
 public:
 	//constructor and destructor
 	Board();
 	~Board();
 
+	//getters and setter
+	int getNodesLength();
+	Component* getNodeComponent(int index);
+	void setNodeComponent(int index, Component* component);
+	sf::Vector2f getNodePosition(int index);
+
+
 	//public functions
+	bool checkIfIntersectingNode(int index, sf::Vector2f coords);
 	void drawBoard(sf::RenderWindow& window);
 };
 

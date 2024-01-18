@@ -92,7 +92,7 @@ void Board::initHoppers() {
 
 void Board::initNodes() {
 	for (int i = 0; i < (this->boardSize * this->boardSize); i++) {
-		sf::Vector2f pos = sf::Vector2f(this->xPos + 125.f + 55.f*(i/this->boardSize),
+		sf::Vector2f pos = sf::Vector2f(this->xPos + 130.f + 55.f*(i/this->boardSize),
 										this->yPos + 150.f + 55.f*(i%this->boardSize));
 		this->node = new Node(this->board[i], pos);
 		this->nodes.push_back(this->node);
@@ -122,6 +122,10 @@ void Board::drawNodes(sf::RenderWindow& window) {
 	}
 }
 
+bool Board::checkValidIndexNodes(int index) {
+	return index <= this->nodes.size();
+}
+
 Board::Board() {
 	this->initObjects();
 	this->initBorder();
@@ -135,6 +139,34 @@ Board::~Board() {
 		delete e;
 	}
 	delete[] board;
+}
+
+int Board::getNodesLength() {
+	return this->nodes.size();
+}
+
+Component* Board::getNodeComponent(int index) {
+	if (checkValidIndexNodes(index)) {
+		return this->nodes[index]->getComponent();
+	}
+}
+
+void Board::setNodeComponent(int index, Component* component) {
+	if (checkValidIndexNodes(index)) {
+		this->nodes[index]->setComponent(component);
+	}
+}
+
+sf::Vector2f Board::getNodePosition(int index) {
+	if (checkValidIndexNodes(index)) {
+		return this->nodes[index]->getSprite().getPosition();
+	}
+}
+
+bool Board::checkIfIntersectingNode(int index, sf::Vector2f coords) {
+	if (checkValidIndexNodes(index)) {
+		return this->nodes[index]->getSprite().getGlobalBounds().contains(coords);
+	}
 }
 
 void Board::drawBoard(sf::RenderWindow& window) {
