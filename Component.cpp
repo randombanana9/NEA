@@ -26,10 +26,6 @@ bool Component::getHeld() {
 	return this->held;
 }
 
-void Component::toggleHeld() {
-	this->held = !this->held;
-}
-
 void Component::highlight() {
 	this->sprite.setOutlineThickness(2.f);
 }
@@ -46,11 +42,15 @@ sf::RectangleShape Component::getSprite() {
 	return this->sprite;
 }
 
-void Gear::initLogic() {
+bool Component::getMainComponent() {
+	return this->mainComponent;
+}
+
+void Gear::initLogic(bool main) {
 	this->connectedNode = NULL;
 	this->onButton = true;
 	this->held = false;
-	this->mainComponent = false;
+	this->mainComponent = main;
 }
 
 Ramp::Ramp() {
@@ -80,6 +80,6 @@ GearBit::GearBit() {
 }
 
 Gear::Gear() {
-	this->initLogic();
+	this->initLogic(this->mainComponent);
 	this->initSprite(this->colour, this->position);
 }

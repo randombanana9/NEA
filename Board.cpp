@@ -122,10 +122,6 @@ void Board::drawNodes(sf::RenderWindow& window) {
 	}
 }
 
-bool Board::checkValidIndexNodes(int index) {
-	return index <= this->nodes.size();
-}
-
 Board::Board() {
 	this->initObjects();
 	this->initBorder();
@@ -146,27 +142,23 @@ int Board::getNodesLength() {
 }
 
 Component* Board::getNodeComponent(int index) {
-	if (checkValidIndexNodes(index)) {
-		return this->nodes[index]->getComponent();
-	}
+	return this->nodes[index]->getComponent();
 }
 
 void Board::setNodeComponent(int index, Component* component) {
-	if (checkValidIndexNodes(index)) {
-		this->nodes[index]->setComponent(component);
-	}
+	this->nodes[index]->setComponent(component);
 }
 
 sf::Vector2f Board::getNodePosition(int index) {
-	if (checkValidIndexNodes(index)) {
-		return this->nodes[index]->getSprite().getPosition();
-	}
+	return this->nodes[index]->getSprite().getPosition();
+}
+
+bool Board::getNodeMainNode(int index) {
+	return this->nodes[index]->getMainNode();
 }
 
 bool Board::checkIfIntersectingNode(int index, sf::Vector2f coords) {
-	if (checkValidIndexNodes(index)) {
-		return this->nodes[index]->getSprite().getGlobalBounds().contains(coords);
-	}
+	return this->nodes[index]->getSprite().getGlobalBounds().contains(coords);
 }
 
 void Board::drawBoard(sf::RenderWindow& window) {

@@ -39,7 +39,6 @@ private:
 	void drawHoppers(sf::RenderWindow& window);
 	void drawNodes(sf::RenderWindow& window);
 
-	bool checkValidIndexNodes(int index);
 public:
 	//constructor and destructor
 	Board();
@@ -50,6 +49,7 @@ public:
 	Component* getNodeComponent(int index);
 	void setNodeComponent(int index, Component* component);
 	sf::Vector2f getNodePosition(int index);
+	bool getNodeMainNode(int index);
 
 
 	//public functions

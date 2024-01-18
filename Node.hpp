@@ -21,6 +21,7 @@ public:
 	//getters
 	sf::RectangleShape getSprite();
 	Component* getComponent();
+	bool getMainNode();
 
 	//setters
 	void setComponent(Component* newComp);

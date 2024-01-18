@@ -62,6 +62,7 @@ private:
 	//render functions
 	void drawObjects();
 	void drawText();
+	void drawHeld();
 
 public:
 	//Constructor and Destructor

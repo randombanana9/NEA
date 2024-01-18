@@ -46,7 +46,7 @@ void Game::initFonts() {
 }
 
 void Game::initText() {
-	this->infoText.setCharacterSize(24.f);
+	this->infoText.setCharacterSize(24);
 	this->infoText.setFillColor(sf::Color::Black);
 	this->infoText.setFont(this->font);
 	this->infoText.setPosition(sf::Vector2f(1100.f, 20.f));
@@ -92,9 +92,11 @@ void Game::updateComponents() {
 			int index = 0;
 
 			for (index; index < board->getNodesLength(); index++) {
-				if (board->checkIfIntersectingNode(index, this->mousePosView)) {
-					placeComp = true;
-					break;
+				if (this->board->checkIfIntersectingNode(index, this->mousePosView)) {
+					if (this->board->getNodeMainNode(index) || !this->heldComponent->getMainComponent()) {
+						placeComp = true;
+						break;
+					}
 				}
 			}
 
@@ -103,9 +105,6 @@ void Game::updateComponents() {
 				board->setNodeComponent(index, this->heldComponent);
 
 				this->heldComponent->moveTo(this->board->getNodePosition(index));
-
-				std::cout << this->heldComponent->getSprite().getPosition().x << ", " << this->heldComponent->getSprite().getPosition().y << "\n";
-				std::cout << this->board->getNodePosition(index).x << ", " << this->board->getNodePosition(index).y << "\n\n";
 
 				this->heldComponent = oldComp;
 			}
@@ -136,39 +135,34 @@ void Game::UpdatePartsMenu() {
 	for (int i = 1; i < 8; i++) {
 		if (this->partsMenu[i].getGlobalBounds().contains(this->mousePosView)) {
 			if (this->click) {
-				Component* newComp;
+				Component* newComp = NULL;
 				switch (i) {
 				case 1:
 					newComp = new Ramp;
-					std::cout << "Made Ramp\n";
 					break;
 				case 2:
 					newComp = new Crossover;
-					std::cout << "Made Crossover\n";
 					break;
 				case 3:
 					newComp = new Interceptor;
-					std::cout << "Made Interceptor\n";
 					break;
 				case 4:
 					newComp = new Bit;
-					std::cout << "Made Bit\n";
 					break;
 				case 5:
 					newComp = new GearBit;
-					std::cout << "Made Gear Bit\n";
 					break;
 				case 6:
 					newComp = new Gear;
-					std::cout << "Made Gear\n";
 					break;
 				default:
-					newComp = new Ramp;
+					std::cout << "Flip\n";
 				}
-				std::cout << newComp << "\n\n";
-				newComp->highlight();
-				this->components.push_back(newComp);
-				this->heldComponent = newComp;
+				if (newComp != NULL) {
+					newComp->highlight();
+					this->components.push_back(newComp);
+					this->heldComponent = newComp;
+				}
 			}
 		}
 	}
@@ -198,6 +192,12 @@ void Game::drawObjects() {
 
 void Game::drawText() {
 	this->window->draw(this->infoText);
+}
+
+void Game::drawHeld() {
+	if (this->heldComponent != NULL) {
+		this->window->draw(this->heldComponent->getSprite());
+	}
 }
 
 Game::Game() {
@@ -233,6 +233,8 @@ void Game::render() {
 
 	this->drawObjects();
 	this->drawText();
+
+	this->drawHeld();
 
 	//displays the new frame
 	this->window->display();

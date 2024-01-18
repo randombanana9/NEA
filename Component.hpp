@@ -16,14 +16,17 @@ protected: //private members cannot be inherited so protected members are used i
 	void virtual initSprite(sf::Color colour, sf::Vector2f position);
 	void virtual initLogic();
 public:
+	//getters
 	sf::Vector2f getPos();
 	bool getHeld();
+	bool getMainComponent();
 
-	void toggleHeld();
+	virtual sf::RectangleShape getSprite();
+
+
 	void highlight();
 	void unhighlight();
 	void moveTo(sf::Vector2f pos);
-	virtual sf::RectangleShape getSprite();
 };
 
 class Ramp : public Component {
@@ -72,11 +75,13 @@ public:
 };
 
 class Gear : public Component {
-	sf::Color colour = sf::Color::Black;
+	sf::Color colour = sf::Color::Cyan;
 
 	sf::Vector2f position;
 
-	void virtual initLogic();
+	bool mainComponent = false;
+
+	void virtual initLogic(bool main);
 public:
 	Gear();
 };

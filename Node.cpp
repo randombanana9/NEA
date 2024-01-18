@@ -34,9 +34,12 @@ Component* Node::getComponent() {
 	return this->component;
 }
 
+bool Node::getMainNode() {
+	return this->mainNode;
+}
+
 void Node::setComponent(Component* newComp) {
 	this->component = newComp;
-	std::cout << "Placed component" << this->component << "\n";
 }
 
 
