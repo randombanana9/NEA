@@ -5,9 +5,16 @@
 class Node;
 
 class Graph {
-	std::vector<Graph*> parents;
-	std::vector<Graph*> children;
-	bool isOrphan;
-	bool isLeaf;
+private:
+	Graph* children[2];
+	int nodeIndex;
+
+public:
+	Graph();
+
+	void setNodeIndex(int index);
+	int getNodeIndex();
+	void setChild(int index, Graph* child);
+	Graph* getChild(int index);
 };
 

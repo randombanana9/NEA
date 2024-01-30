@@ -92,8 +92,8 @@ void Board::initHoppers() {
 
 void Board::initNodes() {
 	for (int i = 0; i < (this->boardSize * this->boardSize); i++) {
-		sf::Vector2f pos = sf::Vector2f(this->xPos + 130.f + 55.f*(i/this->boardSize),
-										this->yPos + 150.f + 55.f*(i%this->boardSize));
+		sf::Vector2f pos = sf::Vector2f(this->xPos + 130.f + 55.f*(i%this->boardSize),
+										this->yPos + 150.f + 55.f*(i/this->boardSize));
 		this->node = new Node(this->board[i], pos);
 		this->nodes.push_back(this->node);
 	}

@@ -12,14 +12,16 @@ protected: //private members cannot be inherited so protected members are used i
 	bool onButton;
 	bool held;
 	bool mainComponent;
+	bool facingRight;
 
 	void virtual initSprite(sf::Color colour, sf::Vector2f position);
-	void virtual initLogic();
+	void virtual initLogic(bool faceRight);
 public:
 	//getters
 	sf::Vector2f getPos();
 	bool getHeld();
 	bool getMainComponent();
+	bool getFacingRight();
 
 	virtual sf::RectangleShape getSprite();
 
@@ -27,6 +29,7 @@ public:
 	void highlight();
 	void unhighlight();
 	void moveTo(sf::Vector2f pos);
+	void toggleFacingRight();
 };
 
 class Ramp : public Component {
@@ -35,7 +38,7 @@ class Ramp : public Component {
 	sf::Vector2f position;
 
 public:
-	Ramp();
+	Ramp(bool faceRight);
 };
 
 class Crossover : public Component {
@@ -44,7 +47,7 @@ class Crossover : public Component {
 	sf::Vector2f position;
 
 public:
-	Crossover();
+	Crossover(bool faceRight);
 };
 
 class Interceptor : public Component {
@@ -53,7 +56,7 @@ class Interceptor : public Component {
 	sf::Vector2f position;
 
 public:
-	Interceptor();
+	Interceptor(bool faceRight);
 };
 
 class Bit : public Component {
@@ -62,7 +65,7 @@ class Bit : public Component {
 	sf::Vector2f position;
 
 public:
-	Bit();
+	Bit(bool faceRight);
 };
 
 class GearBit : public Component {
@@ -71,11 +74,11 @@ class GearBit : public Component {
 	sf::Vector2f position;
 
 public:
-	GearBit();
+	GearBit(bool faceRight);
 };
 
 class Gear : public Component {
-	sf::Color colour = sf::Color::Cyan;
+	sf::Color colour = sf::Color::Red;
 
 	sf::Vector2f position;
 

@@ -4,6 +4,7 @@
 
 class Board;
 class Component;
+class Graph;
 
 class Game {
 private:
@@ -25,15 +26,15 @@ private:
 
 	//Game objects
 	sf::RectangleShape partsMenu[8];
+	sf::Text partsMenuText[7];
 	sf::RectangleShape infoBox;
 
 	std::vector<Component*> components;
-	/*
-	buttons
-	components
-	the graph?
-	info box
-	*/
+	
+	std::vector<Graph*> graph;
+	Graph* leftRoot;
+	Graph* rightRoot;
+	
 	Board* board;
 	/*
 	marbles
@@ -43,6 +44,7 @@ private:
 	bool mouseHeld;
 	bool click;
 	Component* heldComponent;
+	bool facingRight;
 
 	//Private Functions
 	void initWindow();
@@ -55,7 +57,7 @@ private:
 	void updateMousePos();
 
 	void updateComponents();
-	void UpdatePartsMenu();
+	void updatePartsMenu();
 
 	void deleteHeldComponent();
 

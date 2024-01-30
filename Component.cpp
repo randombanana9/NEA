@@ -11,11 +11,12 @@ void Component::initSprite(sf::Color colour, sf::Vector2f position) {
 	this->sprite.setOutlineColor(sf::Color::Black);
 }
 
-void Component::initLogic() {
-	connectedNode = NULL;
-	onButton = true;
-	held = false;
-	mainComponent = true;
+void Component::initLogic(bool faceRight) {
+	this->connectedNode = NULL;
+	this->onButton = true;
+	this->held = false;
+	this->mainComponent = true;
+	this->facingRight = faceRight;
 }
 
 sf::Vector2f Component::getPos() {
@@ -28,6 +29,14 @@ bool Component::getHeld() {
 
 void Component::highlight() {
 	this->sprite.setOutlineThickness(2.f);
+}
+
+bool Component::getFacingRight() {
+	return this->facingRight;
+}
+
+void Component::toggleFacingRight() {
+	this->facingRight = !this->facingRight;
 }
 
 void Component::unhighlight() {
@@ -53,29 +62,29 @@ void Gear::initLogic(bool main) {
 	this->mainComponent = main;
 }
 
-Ramp::Ramp() {
+Ramp::Ramp(bool faceRight) {
 	this->colour = sf::Color::Green;
-	this->initLogic();
+	this->initLogic(faceRight);
 	this->initSprite(this->colour, this->position);
 }
 
-Crossover::Crossover() {
-	this->initLogic();
+Crossover::Crossover(bool faceRight) {
+	this->initLogic(faceRight);
 	this->initSprite(this->colour, this->position);
 }
 
-Interceptor::Interceptor() {
-	this->initLogic();
+Interceptor::Interceptor(bool faceRight) {
+	this->initLogic(faceRight);
 	this->initSprite(this->colour, this->position);
 }
 
-Bit::Bit() {
-	this->initLogic();
+Bit::Bit(bool faceRight) {
+	this->initLogic(faceRight);
 	this->initSprite(this->colour, this->position);
 }
 
-GearBit::GearBit() {
-	this->initLogic();
+GearBit::GearBit(bool faceRight) {
+	this->initLogic(faceRight);
 	this->initSprite(this->colour, this->position);
 }
 

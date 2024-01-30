@@ -3,6 +3,8 @@
 #include "Game.hpp"
 #include "Board.hpp"
 #include "Component.hpp"
+#include "Graph.hpp"
+
 
 void Game::initWindow() {
 	this->settings.antialiasingLevel = 8;
@@ -33,12 +35,37 @@ void Game::initObjects() {
 	this->infoBox.setOutlineThickness(2.f);
 
 	this->board = new Board();
+
+	Graph* newGraph;
+	int width = sqrt(this->board->getNodesLength());
+	for (int i = 0; i < this->board->getNodesLength(); i++) {
+		newGraph = new Graph;
+		if (i == ((width + 5) / 4) - 1) {
+			this->leftRoot = newGraph;
+		}else if(i == width - (width + 5) / 4){
+			this->rightRoot = newGraph;
+		}
+		this->graph.push_back(newGraph);
+	}
+
+	for (int i = 0; i < this->board->getNodesLength(); i++) {
+		if (i <= this->board->getNodesLength() - width) {
+			if (i % 11) {
+				this->graph[i]->setChild(0, this->graph[i + 10]);
+			}
+			if ((i + 1) % 11 && i + 12 < this->board->getNodesLength()) {
+				this->graph[i]->setChild(1, this->graph[i + 12]);
+			}
+		}
+		this->graph[i]->setNodeIndex(i);
+	}
 }
 
 void Game::initLogic() {
 	this->mouseHeld = false; //For detecting if the mouse button in held for more than one frame
 	this->click = false; //Stores if the mouse was pressed down this frame
 	this->heldComponent = NULL; //Stores a pointer to the currently held component (NULL if not holding a component)
+	this->facingRight = true; //Stores if components to be placed are facing right or not
 }
 
 void Game::initFonts() {
@@ -51,6 +78,22 @@ void Game::initText() {
 	this->infoText.setFont(this->font);
 	this->infoText.setPosition(sf::Vector2f(1100.f, 20.f));
 	this->infoText.setString("Lorem Ipsum Dolor");
+
+	this->partsMenuText[0].setString("Ramp\n(R)");
+	this->partsMenuText[1].setString("Crossover\n(R)");
+	this->partsMenuText[2].setString("Interceptor\n(R)");
+	this->partsMenuText[3].setString("Bit\n(R)");
+	this->partsMenuText[4].setString("Gear Bit\n(R)");
+	this->partsMenuText[5].setString("Gear\n(R)");
+	this->partsMenuText[6].setString("Flip\n(R)");
+
+	for (int i = 0; i < 7; i++) {
+		this->partsMenuText[i].setCharacterSize(14);
+		this->partsMenuText[i].setFillColor(sf::Color::Black);
+		this->partsMenuText[i].setFont(this->font);
+		this->partsMenuText[i].setOrigin(sf::Vector2f(this->partsMenuText[i].getLocalBounds().getSize().x / 2, this->partsMenuText[i].getLocalBounds().getSize().y / 2));
+		this->partsMenuText[i].setPosition(sf::Vector2f(55.f, 65.f + 125.f * i));
+	}
 }
 
 void Game::pollEvents() {
@@ -131,35 +174,36 @@ void Game::updateComponents() {
 	}
 }
 
-void Game::UpdatePartsMenu() {
+void Game::updatePartsMenu() {
 	for (int i = 1; i < 8; i++) {
 		if (this->partsMenu[i].getGlobalBounds().contains(this->mousePosView)) {
 			if (this->click) {
 				Component* newComp = NULL;
 				switch (i) {
 				case 1:
-					newComp = new Ramp;
+					newComp = new Ramp(this->facingRight);
 					break;
 				case 2:
-					newComp = new Crossover;
+					newComp = new Crossover(this->facingRight);
 					break;
 				case 3:
-					newComp = new Interceptor;
+					newComp = new Interceptor(this->facingRight);
 					break;
 				case 4:
-					newComp = new Bit;
+					newComp = new Bit(this->facingRight);
 					break;
 				case 5:
-					newComp = new GearBit;
+					newComp = new GearBit(this->facingRight);
 					break;
 				case 6:
 					newComp = new Gear;
 					break;
 				default:
-					std::cout << "Flip\n";
+					this->facingRight = !this->facingRight;
 				}
 				if (newComp != NULL) {
 					newComp->highlight();
+					newComp->moveTo(this->mousePosView);
 					this->components.push_back(newComp);
 					this->heldComponent = newComp;
 				}
@@ -192,6 +236,10 @@ void Game::drawObjects() {
 
 void Game::drawText() {
 	this->window->draw(this->infoText);
+
+	for (int i = 0; i < 7; i++) {
+		this->window->draw(this->partsMenuText[i]);
+	}
 }
 
 void Game::drawHeld() {
@@ -214,6 +262,9 @@ Game::~Game() {
 	for (auto& e : this->components) {
 		delete e;
 	}
+	for (auto& e : this->graph) {
+		delete e;
+	}
 }
 
 const bool Game::running() const {
@@ -224,7 +275,7 @@ void Game::update() {
 	this->pollEvents();
 	this->updateMousePos();
 	this->updateComponents();
-	this->UpdatePartsMenu();
+	this->updatePartsMenu();
 }
 
 void Game::render() {
