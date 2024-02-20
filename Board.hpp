@@ -12,8 +12,9 @@ private:
 	sf::RectangleShape border;
 	sf::RectangleShape leftLever;
 	sf::RectangleShape rightLever;
-	sf::RectangleShape blueHopper[3];
-	sf::RectangleShape redHopper[3];
+
+	sf::CircleShape marble;
+	std::vector<sf::CircleShape> fallenMarbles;
 
 	Node* node;
 	std::vector<Node*> nodes;
@@ -31,12 +32,10 @@ private:
 	void initObjects();
 	void initBorder();
 	void initLevers();
-	void initHoppers();
 	void initNodes();
 
 	void drawBorder(sf::RenderWindow& window);
 	void drawLevers(sf::RenderWindow& window);
-	void drawHoppers(sf::RenderWindow& window);
 	void drawNodes(sf::RenderWindow& window);
 
 public:
@@ -46,14 +45,27 @@ public:
 
 	//getters and setter
 	int getNodesLength();
+
 	Component* getNodeComponent(int index);
-	void setNodeComponent(int index, Component* component);
+
 	sf::Vector2f getNodePosition(int index);
+
+	sf::FloatRect getLeftLeverBounds();
+	sf::FloatRect getRightLeverBounds();
+
 	bool getNodeMainNode(int index);
 
+	sf::CircleShape getMarble();
+	sf::CircleShape getFallenMarbles(int index);
+
+	void setNodeComponent(int index, Component* component);
+
+	void setMarbleColour(sf::Color col);
+	void setMarblePosition(sf::Vector2f pos);
 
 	//public functions
 	bool checkIfIntersectingNode(int index, sf::Vector2f coords);
+
 	void drawBoard(sf::RenderWindow& window);
 };
 

@@ -4,7 +4,7 @@
 
 class Node;
 
-class Component {
+class Component { 
 protected: //private members cannot be inherited so protected members are used in the parent class
 	sf::RectangleShape sprite;
 
@@ -12,6 +12,7 @@ protected: //private members cannot be inherited so protected members are used i
 	bool onButton;
 	bool held;
 	bool mainComponent;
+	bool originalFacingRight;
 	bool facingRight;
 
 	void virtual initSprite(sf::Color colour, sf::Vector2f position);
@@ -23,8 +24,9 @@ public:
 	bool getMainComponent();
 	bool getFacingRight();
 
-	virtual sf::RectangleShape getSprite();
+	sf::RectangleShape getSprite();
 
+	virtual int checkDropSide(int fallSide);
 
 	void highlight();
 	void unhighlight();
@@ -32,52 +34,62 @@ public:
 	void toggleFacingRight();
 };
 
-class Ramp : public Component {
+class Ramp : public Component { //Inheritance here!!!!
 	sf::Color colour = sf::Color::Green;
 
 	sf::Vector2f position;
 
 public:
 	Ramp(bool faceRight);
+
+	virtual int checkDropSide(int fallSide);
 };
 
-class Crossover : public Component {
+class Crossover : public Component { //Inheritance here!!!!
 	sf::Color colour = sf::Color::Yellow;
 
 	sf::Vector2f position;
 
 public:
 	Crossover(bool faceRight);
+
+	virtual int checkDropSide(int fallSide);
 };
 
-class Interceptor : public Component {
+class Interceptor : public Component { //Inheritance here!!!!
 	sf::Color colour = sf::Color::Black;
 
 	sf::Vector2f position;
 
 public:
 	Interceptor(bool faceRight);
+
+	virtual int checkDropSide(int fallSide);
 };
 
-class Bit : public Component {
+class Bit : public Component { //Inheritance here!!!!
 	sf::Color colour = sf::Color::Blue;
 
 	sf::Vector2f position;
 
 public:
 	Bit(bool faceRight);
+
+	virtual int checkDropSide(int fallSide);
 };
 
-class GearBit : public Component {
+class GearBit : public Component { //Inheritance here!!!!
 	sf::Color colour = sf::Color::Magenta;
 
 	sf::Vector2f position;
 
 public:
 	GearBit(bool faceRight);
+
+	virtual int checkDropSide(int fallSide);
 };
 
-class Gear : public Component {
+class Gear : public Component { //Inheritance here!!!!
 	sf::Color colour = sf::Color::Red;
 
 	sf::Vector2f position;

@@ -28,6 +28,8 @@ private:
 	sf::RectangleShape partsMenu[8];
 	sf::Text partsMenuText[7];
 	sf::RectangleShape infoBox;
+	sf::RectangleShape runButton;
+	sf::Text runButtonText;
 
 	std::vector<Component*> components;
 	
@@ -45,6 +47,18 @@ private:
 	bool click;
 	Component* heldComponent;
 	bool facingRight;
+	bool placementMode;
+	bool startedSimulation;
+	Graph* currentNode;
+	int framesSinceSimUpdate;
+	int dropSide;
+	bool intercepted;
+	int steps;
+	const int hopperStoredOriginal = 8; //The original amount of marbles to be stored in each hopper
+	int leftHopperStoredPreRun;
+	int rightHopperStoredPreRun;
+	int leftHopperStored;
+	int rightHopperStored;
 
 	//Private Functions
 	void initWindow();
@@ -59,12 +73,21 @@ private:
 	void updateComponents();
 	void updatePartsMenu();
 
+	void updateButtons();
+	void updateLevers();
+
+	void updateSimulation();
+
+	void placeComponent(int index);
 	void deleteHeldComponent();
+	void updateComponentOrientation(Component* component);
 
 	//render functions
 	void drawObjects();
 	void drawText();
 	void drawHeld();
+
+	void drawMarbles();
 
 public:
 	//Constructor and Destructor

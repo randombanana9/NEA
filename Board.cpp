@@ -14,6 +14,13 @@ void Board::initObjects() {
 			board[i] = false;
 		}
 	}
+
+	this->marble.setRadius(6.f);
+	this->marble.setOrigin(sf::Vector2f(6.f, 6.f));
+	this->marble.setFillColor(sf::Color::Black);
+	this->marble.setOutlineColor(sf::Color::Black);
+	this->marble.setOutlineThickness(1.f);
+	this->marble.setPosition(sf::Vector2f(375.f, 260.f));
 }
 
 void Board::initBorder() {
@@ -42,54 +49,6 @@ void Board::initLevers() {
 	this->rightLever.setRotation(-2.f);
 }
 
-void Board::initHoppers() {
-	for (int i = 0; i < 3; i++) {
-		this->blueHopper[i].setFillColor(sf::Color::Blue);
-		this->blueHopper[i].setOutlineColor(sf::Color::Black);
-		this->blueHopper[i].setOutlineThickness(1.f);
-		this->blueHopper[i].setSize(sf::Vector2f(30.f, 10.f));
-		this->blueHopper[i].setPosition(sf::Vector2f(this->xPos + 10.f, this->yPos + 20.f + i*20));
-
-		this->redHopper[i].setFillColor(sf::Color::Red);
-		this->redHopper[i].setOutlineColor(sf::Color::Black);
-		this->redHopper[i].setOutlineThickness(1.f);
-		this->redHopper[i].setSize(sf::Vector2f(30.f, 10.f));
-		this->redHopper[i].setPosition(sf::Vector2f(this->xPos + this->width - 40.f, this->yPos + 20.f + i * 20));
-	}
-
-	//first ramps
-	this->blueHopper[0].setSize(sf::Vector2f(this->width/2 - 80.f, 10.f));
-	this->blueHopper[0].setPosition(this->xPos + 20.f, this->yPos + 30.f);
-	this->blueHopper[0].setRotation(1.5);
-
-	this->redHopper[0].setSize(sf::Vector2f(this->width / 2 - 80.f, 10.f));
-	this->redHopper->setOrigin(this->redHopper->getSize().x, 0.f);
-	this->redHopper[0].setPosition(this->xPos + this->width - 20.f, this->yPos + 30.f);
-	this->redHopper[0].setRotation(-1.5);
-
-	//second ramps
-	this->blueHopper[1].setSize(sf::Vector2f(this->width / 4 - 100.f, 10.f));
-	this->blueHopper[1].setPosition(this->xPos + this->width / 2 - 105.f, this->yPos + 90.f);
-	this->blueHopper[1].setRotation(-20);
-
-	this->redHopper[1].setSize(sf::Vector2f(this->width / 4 - 100.f, 10.f));
-	this->redHopper[1].setOrigin(this->redHopper[1].getSize().x, 0.f);
-	this->redHopper[1].setPosition(this->xPos + this->width / 2 + 105.f, this->yPos + 90.f);
-	this->redHopper[1].setRotation(20);
-
-	//gates
-	this->blueHopper[2].setSize(sf::Vector2f(40.f, 10.f));
-	this->blueHopper[2].setPosition(this->blueHopper[1].getPosition());
-	this->blueHopper[2].move(sf::Vector2f(-6.f, -20.f));
-	this->blueHopper[2].setRotation(70.f);
-
-	this->redHopper[2].setSize(sf::Vector2f(40.f, 10.f));
-	this->redHopper[2].setOrigin(this->redHopper[2].getSize().x, 0.f);
-	this->redHopper[2].setPosition(this->redHopper[1].getPosition());
-	this->redHopper[2].move(sf::Vector2f(6.f, -20.f));
-	this->redHopper[2].setRotation(-70.f);
-}
-
 void Board::initNodes() {
 	for (int i = 0; i < (this->boardSize * this->boardSize); i++) {
 		sf::Vector2f pos = sf::Vector2f(this->xPos + 130.f + 55.f*(i%this->boardSize),
@@ -109,13 +68,6 @@ void Board::drawLevers(sf::RenderWindow& window) {
 	window.draw(this->rightLever);
 }
 
-void Board::drawHoppers(sf::RenderWindow& window) {
-	for (int i = 0; i < 3; i++) {
-		window.draw(this->blueHopper[i]);
-		window.draw(this->redHopper[i]);
-	}
-}
-
 void Board::drawNodes(sf::RenderWindow& window) {
 	for (auto& e : this->nodes) {
 		window.draw(e->getSprite());
@@ -125,7 +77,6 @@ void Board::drawNodes(sf::RenderWindow& window) {
 Board::Board() {
 	this->initObjects();
 	this->initBorder();
-	this->initHoppers();
 	this->initLevers();
 	this->initNodes();
 }
@@ -145,16 +96,40 @@ Component* Board::getNodeComponent(int index) {
 	return this->nodes[index]->getComponent();
 }
 
-void Board::setNodeComponent(int index, Component* component) {
-	this->nodes[index]->setComponent(component);
-}
-
 sf::Vector2f Board::getNodePosition(int index) {
 	return this->nodes[index]->getSprite().getPosition();
 }
 
+sf::FloatRect Board::getLeftLeverBounds() {
+	return this->leftLever.getGlobalBounds();
+}
+
+sf::FloatRect Board::getRightLeverBounds() {
+	return this->rightLever.getGlobalBounds();
+}
+
 bool Board::getNodeMainNode(int index) {
 	return this->nodes[index]->getMainNode();
+}
+
+sf::CircleShape Board::getMarble() {
+	return this->marble;
+}
+
+sf::CircleShape Board::getFallenMarbles(int index) {
+	return this->fallenMarbles[index];
+}
+
+void Board::setNodeComponent(int index, Component* component) {
+	this->nodes[index]->setComponent(component);
+}
+
+void Board::setMarbleColour(sf::Color col) {
+	this->marble.setFillColor(col);
+}
+
+void Board::setMarblePosition(sf::Vector2f pos) {
+	this->marble.setPosition(pos);
 }
 
 bool Board::checkIfIntersectingNode(int index, sf::Vector2f coords) {
@@ -164,6 +139,5 @@ bool Board::checkIfIntersectingNode(int index, sf::Vector2f coords) {
 void Board::drawBoard(sf::RenderWindow& window) {
 	this->drawBorder(window);
 	this->drawLevers(window);
-	this->drawHoppers(window);
 	this->drawNodes(window);
 }

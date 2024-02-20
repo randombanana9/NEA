@@ -16,6 +16,7 @@ void Component::initLogic(bool faceRight) {
 	this->onButton = true;
 	this->held = false;
 	this->mainComponent = true;
+	this->originalFacingRight = faceRight;
 	this->facingRight = faceRight;
 }
 
@@ -51,6 +52,10 @@ sf::RectangleShape Component::getSprite() {
 	return this->sprite;
 }
 
+int Component::checkDropSide(int fallSide) {
+	return 0;
+}
+
 bool Component::getMainComponent() {
 	return this->mainComponent;
 }
@@ -68,9 +73,23 @@ Ramp::Ramp(bool faceRight) {
 	this->initSprite(this->colour, this->position);
 }
 
+int Ramp::checkDropSide(int fallSide) {
+	if (this->facingRight) {
+		return 1;
+	}
+	return 0;
+}
+
 Crossover::Crossover(bool faceRight) {
 	this->initLogic(faceRight);
 	this->initSprite(this->colour, this->position);
+}
+
+int Crossover::checkDropSide(int fallSide) {
+	if (fallSide == 0) {
+		return 1;
+	}
+	return 0;
 }
 
 Interceptor::Interceptor(bool faceRight) {
@@ -78,14 +97,34 @@ Interceptor::Interceptor(bool faceRight) {
 	this->initSprite(this->colour, this->position);
 }
 
+int Interceptor::checkDropSide(int fallSide) {
+	return 6;
+}
+
 Bit::Bit(bool faceRight) {
 	this->initLogic(faceRight);
 	this->initSprite(this->colour, this->position);
 }
 
+int Bit::checkDropSide(int fallSide) {
+	this->facingRight = !this->facingRight;
+	if (!this->facingRight) {
+		return 3;
+	}
+	return 2;
+}
+
 GearBit::GearBit(bool faceRight) {
 	this->initLogic(faceRight);
 	this->initSprite(this->colour, this->position);
+}
+
+int GearBit::checkDropSide(int fallSide) {
+	this->facingRight = !this->facingRight;
+	if (!this->facingRight) {
+		return 5;
+	}
+	return 4;
 }
 
 Gear::Gear() {
