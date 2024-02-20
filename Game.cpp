@@ -301,8 +301,27 @@ void Game::updateSimulation() {
 				if (steps == 11) { //If the marble has reached a lever
 					//TODO
 					std::cout << "Lever";
+					this->board->pushFallen();
+					this->steps = 0;
 					int lastNodeIndex = this->board->getNodesLength();
-					
+					if(nodeIndex == lastNodeIndex - 1 || nodeIndex == lastNodeIndex - 3){
+						std::cout << " right\n";
+						this->currentNode = this->rightRoot;
+					}
+					else if (nodeIndex == lastNodeIndex - 7 || nodeIndex == lastNodeIndex - 9) {
+						std::cout << " left\n";
+						this->currentNode = this->leftRoot;
+					}
+					else {
+						if (this->dropSide == 1) {
+							std::cout << " right\n";
+							this->currentNode = this->rightRoot;
+						}
+						else {
+							std::cout << " left\n";
+							this->currentNode = this->leftRoot;
+						}
+					}
 				}
 				else { //If the marble has gone off the side
 					this->runButtonText.setString("Run");

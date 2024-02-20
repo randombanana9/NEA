@@ -132,6 +132,10 @@ void Board::setMarblePosition(sf::Vector2f pos) {
 	this->marble.setPosition(pos);
 }
 
+void Board::pushFallen() {
+	this->fallenMarbles.push_back(this->marble);
+}
+
 bool Board::checkIfIntersectingNode(int index, sf::Vector2f coords) {
 	return this->nodes[index]->getSprite().getGlobalBounds().contains(coords);
 }

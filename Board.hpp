@@ -63,7 +63,8 @@ public:
 	void setMarbleColour(sf::Color col);
 	void setMarblePosition(sf::Vector2f pos);
 
-	//public functions
+	void pushFallen();
+
 	bool checkIfIntersectingNode(int index, sf::Vector2f coords);
 
 	void drawBoard(sf::RenderWindow& window);
