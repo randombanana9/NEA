@@ -49,6 +49,70 @@ void Board::initLevers() {
 	this->rightLever.setRotation(-2.f);
 }
 
+
+void Board::initFont(sf::Font& font) {
+	this->font = font;
+}
+
+void Board::initHoppers() {
+	this->leftHopper[1].setFillColor(sf::Color::White);
+	this->leftHopper[1].setOutlineColor(sf::Color::Black);
+	this->leftHopper[1].setOutlineThickness(1.f);
+	this->leftHopper[1].setSize(sf::Vector2f(40.f, 40.f));
+	this->leftHopper[1].setOrigin(sf::Vector2f(20.f, 20.f));
+	this->leftHopper[1].setPosition(sf::Vector2f(485.f, 75.f));
+
+	this->rightHopper[1].setFillColor(sf::Color::White);
+	this->rightHopper[1].setOutlineColor(sf::Color::Black);
+	this->rightHopper[1].setOutlineThickness(1.f);
+	this->rightHopper[1].setSize(sf::Vector2f(40.f, 40.f));
+	this->rightHopper[1].setOrigin(sf::Vector2f(20.f, 20.f));
+	this->rightHopper[1].setPosition(sf::Vector2f(725.f, 75.f));
+
+	for (int i = 0; i < 3; i += 2) {
+		this->leftHopper[i].setFillColor(sf::Color(209, 237, 242));
+		this->leftHopper[i].setOutlineColor(sf::Color::Black);
+		this->leftHopper[i].setOutlineThickness(1.f);
+		this->leftHopper[i].setSize(sf::Vector2f(30.f, 30.f));
+		this->leftHopper[i].setOrigin(sf::Vector2f(15.f, 15.f));
+		this->leftHopper[i].setPosition(sf::Vector2f(485.f + (i-1) * 45, 75.f));
+
+		this->rightHopper[i].setFillColor(sf::Color(209, 237, 242));
+		this->rightHopper[i].setOutlineColor(sf::Color::Black);
+		this->rightHopper[i].setOutlineThickness(1.f);
+		this->rightHopper[i].setSize(sf::Vector2f(30.f, 30.f));
+		this->rightHopper[i].setOrigin(sf::Vector2f(15.f, 15.f));
+		this->rightHopper[i].setPosition(sf::Vector2f(725.f + (i - 1) * 45, 75.f));
+	}
+
+	for (int i = 0; i < 3; i++) {
+		this->leftHopperTxt[i].setFont(this->font);
+		this->leftHopperTxt[i].setCharacterSize(24);
+		this->leftHopperTxt[i].setFillColor(sf::Color::Black);
+
+		this->rightHopperTxt[i].setFont(this->font);
+		this->rightHopperTxt[i].setCharacterSize(24);
+		this->rightHopperTxt[i].setFillColor(sf::Color::Black);
+
+		if (i == 0) {
+			this->leftHopperTxt[i].setString("-");
+			this->rightHopperTxt[i].setString("-");
+		}
+		else if (i == 1) {
+			this->leftHopperTxt[i].setString("8");
+			this->rightHopperTxt[i].setString("8");
+		}else{
+			this->leftHopperTxt[i].setString("+");
+			this->rightHopperTxt[i].setString("+");
+		}
+		this->leftHopperTxt[i].setOrigin(sf::Vector2f(this->leftHopperTxt[i].getLocalBounds().getSize().x / 2, this->leftHopperTxt[i].getLocalBounds().getSize().y / 2));
+		this->leftHopperTxt[i].setPosition(sf::Vector2f(this->leftHopper[i].getPosition().x - 8.f, this->leftHopper[i].getPosition().y - 15.f));
+
+		this->rightHopperTxt[i].setOrigin(sf::Vector2f(this->rightHopperTxt[i].getLocalBounds().getSize().x / 2, this->rightHopperTxt[i].getLocalBounds().getSize().y / 2));
+		this->rightHopperTxt[i].setPosition(sf::Vector2f(this->rightHopper[i].getPosition().x - 8.f, this->rightHopper[i].getPosition().y - 15.f));
+	}
+}
+
 void Board::initNodes() {
 	for (int i = 0; i < (this->boardSize * this->boardSize); i++) {
 		sf::Vector2f pos = sf::Vector2f(this->xPos + 130.f + 55.f*(i%this->boardSize),
@@ -68,16 +132,28 @@ void Board::drawLevers(sf::RenderWindow& window) {
 	window.draw(this->rightLever);
 }
 
+void Board::drawHoppers(sf::RenderWindow& window) {
+	for (int i = 0; i < 3; i++) {
+		window.draw(this->leftHopper[i]);
+		window.draw(this->rightHopper[i]);
+		
+		window.draw(this->leftHopperTxt[i]);
+		window.draw(this->rightHopperTxt[i]);
+	}
+}
+
 void Board::drawNodes(sf::RenderWindow& window) {
 	for (auto& e : this->nodes) {
 		window.draw(e->getSprite());
 	}
 }
 
-Board::Board() {
+Board::Board(sf::Font& font) : font(font) {
 	this->initObjects();
 	this->initBorder();
 	this->initLevers();
+	this->initFont(font);
+	this->initHoppers();
 	this->initNodes();
 }
 
@@ -132,6 +208,34 @@ void Board::setMarblePosition(sf::Vector2f pos) {
 	this->marble.setPosition(pos);
 }
 
+void Board::setLeftHopperTxt(std::string newStr) {
+	int oldLength = this->leftHopperTxt[1].getString().getSize();
+	int newLength = newStr.length();
+
+	if (oldLength < newLength) {
+		this->leftHopperTxt[1].move(sf::Vector2f(-2.f, 0));
+	}
+	else if (oldLength > newLength) {
+		this->leftHopperTxt[1].move(sf::Vector2f(2.f, 0));
+	}
+
+	this->leftHopperTxt[1].setString(newStr);
+}
+
+void Board::setRightHopperTxt(std::string newStr) {
+	int oldLength = this->rightHopperTxt[1].getString().getSize();
+	int newLength = newStr.length();
+
+	if (oldLength < newLength) {
+		this->rightHopperTxt[1].move(sf::Vector2f(-8.f, 0));
+	}
+	else if (oldLength > newLength) {
+		this->rightHopperTxt[1].move(sf::Vector2f(8.f, 0));
+	}
+
+	this->rightHopperTxt[1].setString(newStr);
+}
+
 void Board::pushFallen() {
 	this->fallenMarbles.push_back(this->marble);
 }
@@ -140,8 +244,23 @@ bool Board::checkIfIntersectingNode(int index, sf::Vector2f coords) {
 	return this->nodes[index]->getSprite().getGlobalBounds().contains(coords);
 }
 
+bool Board::checkIfIntersectingButton(bool right, int index, sf::Vector2f coords) {
+	if (right) {
+		if (this->rightHopper[index].getGlobalBounds().contains(coords)) {
+			return true;
+		}
+	}
+	else {
+		if (this->leftHopper[index].getGlobalBounds().contains(coords)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void Board::drawBoard(sf::RenderWindow& window) {
 	this->drawBorder(window);
 	this->drawLevers(window);
+	this->drawHoppers(window);
 	this->drawNodes(window);
 }

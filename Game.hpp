@@ -53,6 +53,7 @@ private:
 	int framesSinceSimUpdate;
 	int dropSide;
 	bool intercepted;
+	bool stopped;
 	int steps;
 	const int hopperStoredOriginal = 8; //The original amount of marbles to be stored in each hopper
 	int leftHopperStoredPreRun;
@@ -77,6 +78,7 @@ private:
 	void updateLevers();
 
 	void updateSimulation();
+	void endSim();
 
 	void placeComponent(int index);
 	void deleteHeldComponent();
