@@ -111,6 +111,20 @@ void Board::initHoppers() {
 		this->rightHopperTxt[i].setOrigin(sf::Vector2f(this->rightHopperTxt[i].getLocalBounds().getSize().x / 2, this->rightHopperTxt[i].getLocalBounds().getSize().y / 2));
 		this->rightHopperTxt[i].setPosition(sf::Vector2f(this->rightHopper[i].getPosition().x - 8.f, this->rightHopper[i].getPosition().y - 15.f));
 	}
+
+	this->leftHopperMarble.setRadius(6.f);
+	this->leftHopperMarble.setOrigin(sf::Vector2f(6.f, 6.f));
+	this->leftHopperMarble.setFillColor(sf::Color::Blue);
+	this->leftHopperMarble.setOutlineColor(sf::Color::Black);
+	this->leftHopperMarble.setOutlineThickness(1.f);
+	this->leftHopperMarble.setPosition(sf::Vector2f(485.f, 120.f));
+
+	this->rightHopperMarble.setRadius(6.f);
+	this->rightHopperMarble.setOrigin(sf::Vector2f(6.f, 6.f));
+	this->rightHopperMarble.setFillColor(sf::Color::Red);
+	this->rightHopperMarble.setOutlineColor(sf::Color::Black);
+	this->rightHopperMarble.setOutlineThickness(1.f);
+	this->rightHopperMarble.setPosition(sf::Vector2f(725.f, 120.f));
 }
 
 void Board::initNodes() {
@@ -140,11 +154,27 @@ void Board::drawHoppers(sf::RenderWindow& window) {
 		window.draw(this->leftHopperTxt[i]);
 		window.draw(this->rightHopperTxt[i]);
 	}
+	bool leftEmpty = (this->leftHopperTxt[1].getString() == "0");
+	bool rightEmpty = (this->rightHopperTxt[1].getString() == "0");
+
+	if (!leftEmpty) {
+		window.draw(this->leftHopperMarble);
+	}
+	if (!rightEmpty) {
+		window.draw(this->rightHopperMarble);
+	}
+
 }
 
 void Board::drawNodes(sf::RenderWindow& window) {
 	for (auto& e : this->nodes) {
 		window.draw(e->getSprite());
+	}
+}
+
+void Board::drawFallen(sf::RenderWindow& window) {
+	for (auto& e : this->fallenMarbles) {
+		window.draw(e);
 	}
 }
 
@@ -213,10 +243,10 @@ void Board::setLeftHopperTxt(std::string newStr) {
 	int newLength = newStr.length();
 
 	if (oldLength < newLength) {
-		this->leftHopperTxt[1].move(sf::Vector2f(-2.f, 0));
+		this->leftHopperTxt[1].move(sf::Vector2f(-8.f, 0));
 	}
 	else if (oldLength > newLength) {
-		this->leftHopperTxt[1].move(sf::Vector2f(2.f, 0));
+		this->leftHopperTxt[1].move(sf::Vector2f(8.f, 0));
 	}
 
 	this->leftHopperTxt[1].setString(newStr);
@@ -236,7 +266,13 @@ void Board::setRightHopperTxt(std::string newStr) {
 	this->rightHopperTxt[1].setString(newStr);
 }
 
+void Board::clearFallen() {
+	this->fallenMarbles.clear();
+}
+
 void Board::pushFallen() {
+	int numFallen = this->fallenMarbles.size();
+	this->marble.setPosition(sf::Vector2f(this->xPos + this->width - 8 - 15*(numFallen%53), this->yPos + this->height - 8 - 15*(numFallen/53)));
 	this->fallenMarbles.push_back(this->marble);
 }
 
@@ -263,4 +299,5 @@ void Board::drawBoard(sf::RenderWindow& window) {
 	this->drawLevers(window);
 	this->drawHoppers(window);
 	this->drawNodes(window);
+	this->drawFallen(window);
 }

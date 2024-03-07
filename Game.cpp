@@ -84,6 +84,7 @@ void Game::initLogic() {
 	this->rightHopperStoredPreRun = this->hopperStoredOriginal; //For storing how many marbles were stored in the right hopper before the simulation was run
 	this->leftHopperStored = this->hopperStoredOriginal; //For storing how many marbles are stored in the left hopper during the simulation
 	this->rightHopperStored = this->hopperStoredOriginal; //For storing how many marbles are stored in the right hopper during the simulation
+	this->updateGears = false; //Used to store if gears need to be updated next tick of the simulation.
 }
 
 void Game::initFonts() {
@@ -221,7 +222,7 @@ void Game::updatePartsMenu() {
 					newComp = new GearBit(this->facingRight);
 					break;
 				case 6:
-					newComp = new Gear;
+					newComp = new Gear(this->facingRight);
 					break;
 				default:
 					this->facingRight = !this->facingRight;
@@ -255,28 +256,29 @@ void Game::updateButtons() {
 			this->runButtonText.setPosition(sf::Vector2f(1203.f, 515.f));
 		}
 	}
-	
 	if (this->click) {
-		for (int i = 0; i < 3; i += 2) {
-			if (this->board->checkIfIntersectingButton(true, i, this->mousePosView)) {
-				this->rightHopperStoredPreRun += i - 1;
-				if (0 > this->rightHopperStoredPreRun) {
-					this->rightHopperStoredPreRun = 0;
+		if (this->placementMode) {
+			for (int i = 0; i < 3; i += 2) {
+				if (this->board->checkIfIntersectingButton(true, i, this->mousePosView)) {
+					this->rightHopperStoredPreRun += i - 1;
+					if (0 > this->rightHopperStoredPreRun) {
+						this->rightHopperStoredPreRun = 0;
+					}
+					else if (99 < this->rightHopperStoredPreRun) {
+						this->rightHopperStoredPreRun = 99;
+					}
+					this->board->setRightHopperTxt(std::to_string(this->rightHopperStoredPreRun));
 				}
-				else if (99 < this->rightHopperStoredPreRun) {
-					this->rightHopperStoredPreRun = 99;
+				else if (this->board->checkIfIntersectingButton(false, i, this->mousePosView)) {
+					this->leftHopperStoredPreRun += i - 1;
+					if (0 > this->leftHopperStoredPreRun) {
+						this->leftHopperStoredPreRun = 0;
+					}
+					else if (99 < this->leftHopperStoredPreRun) {
+						this->leftHopperStoredPreRun = 99;
+					}
+					this->board->setLeftHopperTxt(std::to_string(this->leftHopperStoredPreRun));
 				}
-				this->board->setRightHopperTxt(std::to_string(this->rightHopperStoredPreRun));
-			}
-			else if (this->board->checkIfIntersectingButton(false, i, this->mousePosView)) {
-				this->leftHopperStoredPreRun += i - 1;
-				if (0 > this->leftHopperStoredPreRun) {
-					this->leftHopperStoredPreRun = 0;
-				}
-				else if (99 < this->leftHopperStoredPreRun) {
-					this->leftHopperStoredPreRun = 99;
-				}
-				this->board->setLeftHopperTxt(std::to_string(this->leftHopperStoredPreRun));
 			}
 		}
 	}
@@ -309,111 +311,109 @@ void Game::updateSimulation() {
 	if (!this->intercepted) {
 		int nodeIndex;
 		Component* currentComp;
-		if (this->framesSinceSimUpdate >= 60) {
-			this->framesSinceSimUpdate = 0;
+		if (!this->stopped && !this->intercepted) {
+			if (this->framesSinceSimUpdate >= 40) {
+				this->framesSinceSimUpdate = 0;
 
-			nodeIndex = this->currentNode->getNodeIndex();
-			currentComp = this->board->getNodeComponent(nodeIndex);
+				nodeIndex = this->currentNode->getNodeIndex();
+				currentComp = this->board->getNodeComponent(nodeIndex);
 
-			if (this->board->getNodeComponent(nodeIndex) == NULL) { //If there is no component at the current node
-				this->endSim();
-				return;
-			}
-
-			this->updateComponentOrientation(currentComp); //Last 3 lines are for updating the previous node before moving onto the next node
-
-			if (this->steps != 0) {//Stops the simulation from skipping the first node
-				this->currentNode = this->currentNode->getChild(this->dropSide);
-			}
-
-			if (this->currentNode == NULL) { //If the new node is NULL (i.e. off the side of the board or a lever)
-				if (steps == 11) { //If the marble has reached a lever
-					this->board->pushFallen();
-					this->steps = 0;
-					int lastNodeIndex = this->board->getNodesLength();
-					if(nodeIndex == lastNodeIndex - 1 || nodeIndex == lastNodeIndex - 3){
-						this->currentNode = this->rightRoot;
-					}
-					else if (nodeIndex == lastNodeIndex - 7 || nodeIndex == lastNodeIndex - 9) {
-						this->currentNode = this->leftRoot;
-					}
-					else {
-						if (this->dropSide == 1) {
-							this->currentNode = this->rightRoot;
-						}
-						else {
-							this->currentNode = this->leftRoot;
-						}
-					}
-					if (this->currentNode == this->rightRoot) {
-						if (this->rightHopperStored > 0) {
-							this->rightHopperStored--;
-							this->board->setRightHopperTxt(std::to_string(this->rightHopperStored));
-						}
-						else {
-							this->stopped = true;
-						}
-					}
-					else if (this->currentNode == this->leftRoot) {
-						if (this->leftHopperStored > 0) {
-							this->leftHopperStored--;
-							this->board->setLeftHopperTxt(std::to_string(this->leftHopperStored));
-						}
-						else {
-							this->stopped = true;
-						}
-					}
-				}
-				else { //If the marble has gone off the side
+				if (this->board->getNodeComponent(nodeIndex) == NULL) { //If there is no component at the current node
 					this->endSim();
 					return;
 				}
+
+				//NEWCODE
+				if (this->updateGears) {
+					this->updateConnectedGears(currentComp, currentComp->getFacingRight());
+					this->searchedNodes.clear();
+					this->updateGears = false;
+				}
+				this->updateComponentOrientation(currentComp); //Last 3 lines are for updating the previous node before moving onto the next node
+
+				if (this->steps != 0) {//Stops the simulation from skipping the first node
+					this->currentNode = this->currentNode->getChild(this->dropSide);
+				}
+
+				if (this->currentNode == NULL) { //If the new node is NULL (i.e. off the side of the board or a lever)
+					if (steps == 11) { //If the marble has reached a lever
+						this->board->pushFallen();
+						this->steps = 0;
+						int lastNodeIndex = this->board->getNodesLength() - 1;
+						if (nodeIndex == lastNodeIndex - 1 || nodeIndex == lastNodeIndex - 3) {
+							this->currentNode = this->rightRoot;
+						}
+						else if (nodeIndex == lastNodeIndex - 7 || nodeIndex == lastNodeIndex - 9) {
+							this->currentNode = this->leftRoot;
+						}
+						else {
+							if (this->dropSide == 1) {
+								this->currentNode = this->rightRoot;
+							}
+							else {
+								this->currentNode = this->leftRoot;
+							}
+						}
+						if (this->currentNode == this->rightRoot) {
+							this->board->setMarbleColour(sf::Color::Red);
+							if (this->rightHopperStored > 0) {
+								this->rightHopperStored--;
+								this->board->setRightHopperTxt(std::to_string(this->rightHopperStored));
+							}
+							else {
+								this->stopped = true;
+							}
+						}
+						else if (this->currentNode == this->leftRoot) {
+							this->board->setMarbleColour(sf::Color::Blue);
+							if (this->leftHopperStored > 0) {
+								this->leftHopperStored--;
+								this->board->setLeftHopperTxt(std::to_string(this->leftHopperStored));
+							}
+							else {
+								this->stopped = true;
+							}
+						}
+					}
+					else { //If the marble has gone off the side
+						this->endSim();
+						return;
+					}
+				}
+				if (this->board->getNodeComponent(nodeIndex) == NULL) { //If there is no component at the current node
+					this->endSim();
+					return;
+				}
+
+				nodeIndex = this->currentNode->getNodeIndex();
+				currentComp = this->board->getNodeComponent(nodeIndex);
+
+				if (currentComp == NULL) { //if the component is NULL (The node is empty) the game will go back to placement mode
+					this->endSim();
+					return;
+				}
+
+				this->board->setMarblePosition(this->board->getNodePosition(nodeIndex));
+				this->dropSide = currentComp->checkDropSide(1 - this->dropSide); //the 'drop side' is opposite to the 'fall side' so this->dropSide is subtracted from 1 to get fallSide
+
+
+				if (this->dropSide == 6) {
+					this->intercepted = true;
+				}
+				if (this->dropSide == 4 || this->dropSide == 5) {
+					this->updateGears = true;
+				}
+				this->dropSide %= 2;
+
+				this->steps++;
 			}
-			if (this->board->getNodeComponent(nodeIndex) == NULL) { //If there is no component at the current node
-				this->endSim();
-				return;
-			}
-
-			nodeIndex = this->currentNode->getNodeIndex();
-			currentComp = this->board->getNodeComponent(nodeIndex);
-
-			if (currentComp == NULL) { //if the component is NULL (The node is empty) the game will go back to placement mode
-				this->endSim();
-				return;
-			}
-
-			this->board->setMarblePosition(this->board->getNodePosition(nodeIndex));
-			this->dropSide = currentComp->checkDropSide(1 - this->dropSide); //the 'drop side' is opposite to the 'fall side' so this->dropSide is subtracted from 1 to get fallSide
-
-
-			switch (this->dropSide) {
-			case 2:
-				this->dropSide -= 2;
-				break;
-			case 3:
-				this->dropSide -= 2;
-				break;
-			case 4:
-				this->dropSide -= 4;
-				break;
-			case 5:
-				this->dropSide -= 4;
-				break;
-			case 6:
-				this->intercepted = true;
-				break;
-			default:
-				break;
-			}
-
-			this->steps++;
 		}
-
 		this->framesSinceSimUpdate++;
 	}
 }
 
 void Game::endSim() { //Puts the game back into placement mode, and resets the required variables;
+	this->framesSinceSimUpdate = 0;
 	this->runButtonText.setString("Run");
 	this->runButtonText.setOrigin(sf::Vector2f(this->runButtonText.getLocalBounds().getSize().x / 2, this->runButtonText.getLocalBounds().getSize().y / 2)); //Sets the origin of the text to the centre of the text
 	this->runButtonText.setPosition(sf::Vector2f(1203.f, 515.f));
@@ -426,6 +426,7 @@ void Game::endSim() { //Puts the game back into placement mode, and resets the r
 	this->rightHopperStored = this->rightHopperStoredPreRun;
 	this->board->setLeftHopperTxt(std::to_string(this->leftHopperStored));
 	this->board->setRightHopperTxt(std::to_string(this->rightHopperStored));
+	this->board->clearFallen();
 }
 
 void Game::placeComponent(int index) {
@@ -437,6 +438,10 @@ void Game::placeComponent(int index) {
 	}
 	else {
 		this->heldComponent->moveTo(sf::Vector2f(this->board->getNodePosition(index).x - 5.f, this->board->getNodePosition(index).y));
+	}
+	if (this->heldComponent->isGear()) {
+		this->updateConnectedGears(this->heldComponent, this->heldComponent->getFacingRight());
+		this->searchedNodes.clear();
 	}
 
 	this->heldComponent = oldComp;
@@ -465,6 +470,58 @@ void Game::updateComponentOrientation(Component* component) {
 	}
 	else {
 		component->moveTo(sf::Vector2f(this->board->getNodePosition(index).x - 5.f, this->board->getNodePosition(index).y));
+	}
+}
+
+void Game::updateConnectedGears(Component* currentComp, bool newFacingRight) {
+	int index;
+	for (int i = 0; i < this->board->getNodesLength(); i++) {
+		if (this->board->getNodeComponent(i) == currentComp) {
+			index = i;
+			break;
+		}
+	}
+	std::cout << index << "\n";
+	for (auto& e : this->searchedNodes) { //Stops this branch if the current node has already been visited
+		if (e == index) {
+			return;
+		}
+	}
+	this->searchedNodes.push_back(index); //Adds the current node to the searched nodes.
+	if (currentComp->getFacingRight() == !newFacingRight) {
+		currentComp->toggleFacingRight();
+		this->updateComponentOrientation(currentComp);
+	}
+	for (int i = 0; i < 4; i++) { //Will search all adjacent nodes
+		int sign = (i % 2) * 2 - 1; //sign will be -1 if i is even, and 1 if i is odd
+		int num = i / 2 * 10 + 1; //will be 1 if i if 0 or 1, and 11 if i is 2 or 3
+		int next = index + sign * num;
+
+		if (i == 0) {
+			if (index % 11 == 0) { //stops from searching off the side of the board
+				continue;
+			}
+		}if (i == 1) {
+			if (index / 11 == 0) {
+				continue;
+			}
+		}if (i == 2) {
+			if (index % 11 == 10) {
+				continue;
+			}
+		}if (i == 3) {
+			if (index / 11 == 10) {
+				continue;
+			}
+		}
+		Component* nextComponent = this->board->getNodeComponent(next);
+		if (nextComponent == NULL) {
+			continue;
+		}
+		else if (!nextComponent->isGear()) {
+			continue;
+		}
+		this->updateConnectedGears(nextComponent, newFacingRight);
 	}
 }
 

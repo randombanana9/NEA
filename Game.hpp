@@ -60,6 +60,8 @@ private:
 	int rightHopperStoredPreRun;
 	int leftHopperStored;
 	int rightHopperStored;
+	bool updateGears;
+	std::vector<int> searchedNodes;
 
 	//Private Functions
 	void initWindow();
@@ -83,6 +85,7 @@ private:
 	void placeComponent(int index);
 	void deleteHeldComponent();
 	void updateComponentOrientation(Component* component);
+	void updateConnectedGears(Component* currentComp, bool newFacingRight);
 
 	//render functions
 	void drawObjects();

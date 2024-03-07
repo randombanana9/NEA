@@ -19,6 +19,9 @@ private:
 	sf::Text leftHopperTxt[3];
 	sf::Text rightHopperTxt[3];
 
+	sf::CircleShape leftHopperMarble;
+	sf::CircleShape rightHopperMarble;
+
 	sf::CircleShape marble;
 	std::vector<sf::CircleShape> fallenMarbles;
 
@@ -48,6 +51,7 @@ private:
 	void drawLevers(sf::RenderWindow& window);
 	void drawHoppers(sf::RenderWindow& window);
 	void drawNodes(sf::RenderWindow& window);
+	void drawFallen(sf::RenderWindow& window);
 
 public:
 	//constructor and destructor
@@ -77,7 +81,7 @@ public:
 	void setLeftHopperTxt(std::string newStr);
 	void setRightHopperTxt(std::string newStr);
 
-
+	void clearFallen();
 	void pushFallen();
 
 	bool checkIfIntersectingNode(int index, sf::Vector2f coords);

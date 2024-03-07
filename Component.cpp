@@ -13,11 +13,12 @@ void Component::initSprite(sf::Color colour, sf::Vector2f position) {
 
 void Component::initLogic(bool faceRight) {
 	this->connectedNode = NULL;
-	this->onButton = true;
+	//this->onButton = true; TODO
 	this->held = false;
 	this->mainComponent = true;
-	this->originalFacingRight = faceRight;
+	//this->originalFacingRight = faceRight; TODO
 	this->facingRight = faceRight;
+	this->isAGear = false;
 }
 
 sf::Vector2f Component::getPos() {
@@ -56,15 +57,12 @@ int Component::checkDropSide(int fallSide) {
 	return 0;
 }
 
-bool Component::getMainComponent() {
-	return this->mainComponent;
+bool Component::isGear() {
+	return this->isAGear;
 }
 
-void Gear::initLogic(bool main) {
-	this->connectedNode = NULL;
-	this->onButton = true;
-	this->held = false;
-	this->mainComponent = main;
+bool Component::getMainComponent() {
+	return this->mainComponent;
 }
 
 Ramp::Ramp(bool faceRight) {
@@ -114,6 +112,20 @@ int Bit::checkDropSide(int fallSide) {
 	return 2;
 }
 
+void GearBit::initLogic(bool faceRight) {
+	this->connectedNode = NULL;
+	//this->onButton = true; TODO
+	this->held = false;
+	this->mainComponent = true;
+	//this->originalFacingRight = faceRight; TODO
+	this->facingRight = faceRight;
+	this->isAGear = true;
+}
+
+void GearBit::flip() {
+	this->facingRight = !this->facingRight;
+}
+
 GearBit::GearBit(bool faceRight) {
 	this->initLogic(faceRight);
 	this->initSprite(this->colour, this->position);
@@ -127,7 +139,16 @@ int GearBit::checkDropSide(int fallSide) {
 	return 4;
 }
 
-Gear::Gear() {
-	this->initLogic(this->mainComponent);
+void Gear::initLogic(bool main, bool faceRight) {
+	this->connectedNode = NULL;
+	//this->onButton = true;
+	this->held = false;
+	this->mainComponent = main;
+	this->isAGear = true;
+	this->facingRight = faceRight;
+}
+
+Gear::Gear(bool faceRight) {
+	this->initLogic(this->mainComponent, faceRight);
 	this->initSprite(this->colour, this->position);
 }
