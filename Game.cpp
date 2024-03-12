@@ -87,6 +87,21 @@ void Game::initLogic() {
 	this->updateGears = false; //Used to store if gears need to be updated next tick of the simulation.
 }
 
+void Game::initTextures() {
+	this->rampTexture.loadFromFile("Resources/Ramp.png");
+	this->rampTexture.setSmooth(true);
+	this->crossoverTexture.loadFromFile("Resources/Crossover.png");
+	this->crossoverTexture.setSmooth(true);
+	this->interceptorTexture.loadFromFile("Resources/Interceptor.png");
+	this->interceptorTexture.setSmooth(true);
+	this->bitTexture.loadFromFile("Resources/Bit.png");
+	this->bitTexture.setSmooth(true);
+	this->gearBitTexture.loadFromFile("Resources/GearBit.png");
+	this->gearBitTexture.setSmooth(true);
+	this->gearTexture.loadFromFile("Resources/Gear.png");
+	this->gearTexture.setSmooth(true);
+}
+
 void Game::initFonts() {
 	this->font.loadFromFile("Resources/Sans-Mono.ttf"); //Loads the font to be used for text
 }
@@ -113,6 +128,8 @@ void Game::initText() {
 		this->partsMenuText[i].setOrigin(sf::Vector2f(this->partsMenuText[i].getLocalBounds().getSize().x / 2, this->partsMenuText[i].getLocalBounds().getSize().y / 2)); //Sets the origin of the text to the centre of the text
 		this->partsMenuText[i].setPosition(sf::Vector2f(55.f, 65.f + 125.f * i));
 	}
+
+	this->partsMenuText[2].move(sf::Vector2f(5.f, 0.f)); //Changes the Interceptor button text position to better fit the button
 
 	this->runButtonText.setString("Run");
 	this->runButtonText.setCharacterSize(24);
@@ -183,7 +200,6 @@ void Game::updateComponents() {
 	else {
 		for (auto& e : this->components) {
 			if (abs(e->getPos().x - this->mousePosView.x) <= 25.f && abs(e->getPos().y - this->mousePosView.y) <= 25.f) { //Checks if the mouse is within a square around the component
-				e->highlight();
 				if (this->mouseHeld && !e->getHeld()) {
 					this->heldComponent = e;
 					for (int i = 0; i < this->board->getNodesLength(); i++) {
@@ -192,9 +208,6 @@ void Game::updateComponents() {
 						}
 					}
 				}
-			}
-			else {
-				e->unhighlight();
 			}
 		}
 	}
@@ -207,22 +220,22 @@ void Game::updatePartsMenu() {
 				Component* newComp = NULL;
 				switch (i) {
 				case 1:
-					newComp = new Ramp(this->facingRight); //Dyanmic OOP Here!!!!
+					newComp = new Ramp(this->facingRight, this->rampTexture); //Dyanmic OOP Here!!!!
 					break;
 				case 2:
-					newComp = new Crossover(this->facingRight);
+					newComp = new Crossover(this->facingRight, this->crossoverTexture);
 					break;
 				case 3:
-					newComp = new Interceptor(this->facingRight);
+					newComp = new Interceptor(this->facingRight, this->interceptorTexture);
 					break;
 				case 4:
-					newComp = new Bit(this->facingRight);
+					newComp = new Bit(this->facingRight, this->bitTexture);
 					break;
 				case 5:
-					newComp = new GearBit(this->facingRight);
+					newComp = new GearBit(this->facingRight, this->gearBitTexture);
 					break;
 				case 6:
-					newComp = new Gear(this->facingRight);
+					newComp = new Gear(this->facingRight, this->gearTexture);
 					break;
 				default:
 					this->facingRight = !this->facingRight;
@@ -234,7 +247,6 @@ void Game::updatePartsMenu() {
 					}
 				}
 				if (newComp != NULL) {
-					newComp->highlight();
 					newComp->moveTo(this->mousePosView);
 					this->components.push_back(newComp);
 					this->heldComponent = newComp;
@@ -312,7 +324,7 @@ void Game::updateSimulation() {
 		int nodeIndex;
 		Component* currentComp;
 		if (!this->stopped && !this->intercepted) {
-			if (this->framesSinceSimUpdate >= 40) {
+			if (this->framesSinceSimUpdate >= 60) {
 				this->framesSinceSimUpdate = 0;
 
 				nodeIndex = this->currentNode->getNodeIndex();
@@ -323,13 +335,12 @@ void Game::updateSimulation() {
 					return;
 				}
 
-				//NEWCODE
 				if (this->updateGears) {
 					this->updateConnectedGears(currentComp, currentComp->getFacingRight());
 					this->searchedNodes.clear();
 					this->updateGears = false;
 				}
-				this->updateComponentOrientation(currentComp); //Last 3 lines are for updating the previous node before moving onto the next node
+				currentComp->updateOrientation(); //Lines 328 to this one are for updating the previous node before moving onto the next node
 
 				if (this->steps != 0) {//Stops the simulation from skipping the first node
 					this->currentNode = this->currentNode->getChild(this->dropSide);
@@ -399,6 +410,7 @@ void Game::updateSimulation() {
 
 				if (this->dropSide == 6) {
 					this->intercepted = true;
+					this->setInfo("Intercepted");
 				}
 				if (this->dropSide == 4 || this->dropSide == 5) {
 					this->updateGears = true;
@@ -434,10 +446,10 @@ void Game::placeComponent(int index) {
 	board->setNodeComponent(index, this->heldComponent);
 
 	if (this->heldComponent->getFacingRight()) {
-		this->heldComponent->moveTo(sf::Vector2f(this->board->getNodePosition(index).x + 5.f, this->board->getNodePosition(index).y));
+		this->heldComponent->moveTo(sf::Vector2f(this->board->getNodePosition(index).x, this->board->getNodePosition(index).y));
 	}
 	else {
-		this->heldComponent->moveTo(sf::Vector2f(this->board->getNodePosition(index).x - 5.f, this->board->getNodePosition(index).y));
+		this->heldComponent->moveTo(sf::Vector2f(this->board->getNodePosition(index).x, this->board->getNodePosition(index).y));
 	}
 	if (this->heldComponent->isGear()) {
 		this->updateConnectedGears(this->heldComponent, this->heldComponent->getFacingRight());
@@ -457,22 +469,6 @@ void Game::deleteHeldComponent() {
 	}
 }
 
-void Game::updateComponentOrientation(Component* component) {
-	int index;
-	for (int i = 0; i < this->board->getNodesLength(); i++) {
-		if (this->board->getNodeComponent(i) == component) {
-			index = i;
-			break;
-		}
-	}
-	if (component->getFacingRight()) {
-		component->moveTo(sf::Vector2f(this->board->getNodePosition(index).x + 5.f, this->board->getNodePosition(index).y));
-	}
-	else {
-		component->moveTo(sf::Vector2f(this->board->getNodePosition(index).x - 5.f, this->board->getNodePosition(index).y));
-	}
-}
-
 void Game::updateConnectedGears(Component* currentComp, bool newFacingRight) {
 	int index;
 	for (int i = 0; i < this->board->getNodesLength(); i++) {
@@ -481,7 +477,6 @@ void Game::updateConnectedGears(Component* currentComp, bool newFacingRight) {
 			break;
 		}
 	}
-	std::cout << index << "\n";
 	for (auto& e : this->searchedNodes) { //Stops this branch if the current node has already been visited
 		if (e == index) {
 			return;
@@ -490,7 +485,7 @@ void Game::updateConnectedGears(Component* currentComp, bool newFacingRight) {
 	this->searchedNodes.push_back(index); //Adds the current node to the searched nodes.
 	if (currentComp->getFacingRight() == !newFacingRight) {
 		currentComp->toggleFacingRight();
-		this->updateComponentOrientation(currentComp);
+		currentComp->updateOrientation();
 	}
 	for (int i = 0; i < 4; i++) { //Will search all adjacent nodes
 		int sign = (i % 2) * 2 - 1; //sign will be -1 if i is even, and 1 if i is odd
@@ -523,6 +518,10 @@ void Game::updateConnectedGears(Component* currentComp, bool newFacingRight) {
 		}
 		this->updateConnectedGears(nextComponent, newFacingRight);
 	}
+}
+
+void Game::setInfo(std::string newString) {
+	this->infoText.setString(newString);
 }
 
 void Game::drawObjects() {
@@ -563,9 +562,21 @@ void Game::drawMarbles() {
 Game::Game() {
 	this->initWindow();
 	this->initObjects();
+	this->initTextures();
 	this->initFonts();
 	this->initText();
 	this->initLogic();
+
+	/*
+	this->test.setTexture(this->gearTexture);
+	this->test.setScale(sf::Vector2f(1.f / 15, 1.f / 15));
+
+	float a = this->test.getScale().x;
+	float b = this->test.getTexture()->getSize().x * a;
+
+	this->test.setOrigin(sf::Vector2f(b/2, b/2));
+	this->test.setPosition(sf::Vector2f(307.f, 193.f));
+	*/
 }
 
 Game::~Game() {
@@ -611,6 +622,8 @@ void Game::render() {
 	if (startedSimulation) {
 		this->drawMarbles();
 	}
+
+	this->window->draw(this->test);
 
 	//displays the new frame
 	this->window->display();

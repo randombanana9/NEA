@@ -8,6 +8,8 @@ class Graph;
 
 class Game {
 private:
+	sf::Sprite test;
+
 	//private variables related to the window
 	sf::ContextSettings settings;
 	sf::RenderWindow* window;
@@ -23,6 +25,14 @@ private:
 
 	//Text
 	sf::Text infoText;
+
+	//Textures
+	sf::Texture rampTexture;
+	sf::Texture crossoverTexture;
+	sf::Texture interceptorTexture;
+	sf::Texture bitTexture;
+	sf::Texture gearBitTexture;
+	sf::Texture gearTexture;
 
 	//Game objects
 	sf::RectangleShape partsMenu[8];
@@ -67,6 +77,7 @@ private:
 	void initWindow();
 	void initObjects();
 	void initLogic();
+	void initTextures();
 	void initFonts();
 	void initText();
 
@@ -84,8 +95,9 @@ private:
 
 	void placeComponent(int index);
 	void deleteHeldComponent();
-	void updateComponentOrientation(Component* component);
 	void updateConnectedGears(Component* currentComp, bool newFacingRight);
+
+	void setInfo(std::string newString);
 
 	//render functions
 	void drawObjects();

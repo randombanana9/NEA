@@ -2,35 +2,43 @@
 
 #include "Component.hpp"
 
-void Component::initSprite(sf::Color colour, sf::Vector2f position) {
-	this->sprite.setSize(sf::Vector2f(20.f, 20.f));
-	this->sprite.setOrigin(sf::Vector2f(10.f, 10.f));
-	this->sprite.setFillColor(colour);
-	this->sprite.setPosition(position);
-	this->sprite.setOutlineThickness(1.f);
-	this->sprite.setOutlineColor(sf::Color::Black);
+void Component::initSprite(sf::Vector2f position) {
+	this->sprite.setTexture(this->texture);
+	this->sprite.setScale(1.f / 15, 1.f / 15);
+
+	this->offset = 0.f;
+	if (!this->facingRight) {
+		this->sprite.scale(sf::Vector2f(-1.f, 1.f));
+		this->offset = 48.f;
+	}
+
+	this->width = this->sprite.getTexture()->getSize().x / 15;
+	float xPos = position.x - this->width / 2 + this->offset;
+	float yPos = position.y - this->width / 2;
+	this->sprite.setPosition(sf::Vector2f(xPos, yPos));
+}
+
+void Component::initTexture(sf::Texture txtr) {
+	this->texture = txtr;
 }
 
 void Component::initLogic(bool faceRight) {
 	this->connectedNode = NULL;
-	//this->onButton = true; TODO
 	this->held = false;
 	this->mainComponent = true;
-	//this->originalFacingRight = faceRight; TODO
 	this->facingRight = faceRight;
 	this->isAGear = false;
+	this->changedOrientation = false;
 }
 
 sf::Vector2f Component::getPos() {
-	return this->sprite.getPosition();
+	float xPos = this->sprite.getPosition().x + this->width / 2 - this->offset;
+	float yPos = this->sprite.getPosition().y + this->width / 2;
+	return sf::Vector2f(xPos, yPos);
 }
 
 bool Component::getHeld() {
 	return this->held;
-}
-
-void Component::highlight() {
-	this->sprite.setOutlineThickness(2.f);
 }
 
 bool Component::getFacingRight() {
@@ -39,17 +47,30 @@ bool Component::getFacingRight() {
 
 void Component::toggleFacingRight() {
 	this->facingRight = !this->facingRight;
+	this->changedOrientation = true;
 }
 
-void Component::unhighlight() {
-	this->sprite.setOutlineThickness(1.f);
+void Component::updateOrientation() {
+	sf::Vector2f position = this->getPos();
+	if (this->changedOrientation) {
+		this->sprite.scale(sf::Vector2f(-1.f, 1.f));
+	}
+
+	this->offset = 0.f;
+	if (!this->facingRight) {
+		this->offset = 48.f;
+	}
+	this->moveTo(position);
+	this->changedOrientation = false;
 }
 
 void Component::moveTo(sf::Vector2f pos) {
-	this->sprite.setPosition(pos);
+	float xPos = pos.x - this->width / 2 + this->offset;
+	float yPos = pos.y - this->width / 2;
+	this->sprite.setPosition(sf::Vector2f(xPos, yPos));
 }
 
-sf::RectangleShape Component::getSprite() {
+sf::Sprite Component::getSprite() {
 	return this->sprite;
 }
 
@@ -65,10 +86,10 @@ bool Component::getMainComponent() {
 	return this->mainComponent;
 }
 
-Ramp::Ramp(bool faceRight) {
-	this->colour = sf::Color::Green;
+Ramp::Ramp(bool faceRight, sf::Texture& txtr) {
 	this->initLogic(faceRight);
-	this->initSprite(this->colour, this->position);
+	this->initTexture(txtr);
+	this->initSprite(this->position);
 }
 
 int Ramp::checkDropSide(int fallSide) {
@@ -78,9 +99,10 @@ int Ramp::checkDropSide(int fallSide) {
 	return 0;
 }
 
-Crossover::Crossover(bool faceRight) {
+Crossover::Crossover(bool faceRight, sf::Texture& txtr) {
 	this->initLogic(faceRight);
-	this->initSprite(this->colour, this->position);
+	this->initTexture(txtr);
+	this->initSprite(this->position);
 }
 
 int Crossover::checkDropSide(int fallSide) {
@@ -90,22 +112,24 @@ int Crossover::checkDropSide(int fallSide) {
 	return 0;
 }
 
-Interceptor::Interceptor(bool faceRight) {
+Interceptor::Interceptor(bool faceRight, sf::Texture& txtr) {
 	this->initLogic(faceRight);
-	this->initSprite(this->colour, this->position);
+	this->initTexture(txtr);
+	this->initSprite(this->position);
 }
 
 int Interceptor::checkDropSide(int fallSide) {
 	return 6;
 }
 
-Bit::Bit(bool faceRight) {
+Bit::Bit(bool faceRight, sf::Texture& txtr) {
 	this->initLogic(faceRight);
-	this->initSprite(this->colour, this->position);
+	this->initTexture(txtr);
+	this->initSprite(this->position);
 }
 
 int Bit::checkDropSide(int fallSide) {
-	this->facingRight = !this->facingRight;
+	this->toggleFacingRight();
 	if (!this->facingRight) {
 		return 3;
 	}
@@ -114,25 +138,25 @@ int Bit::checkDropSide(int fallSide) {
 
 void GearBit::initLogic(bool faceRight) {
 	this->connectedNode = NULL;
-	//this->onButton = true; TODO
 	this->held = false;
 	this->mainComponent = true;
-	//this->originalFacingRight = faceRight; TODO
 	this->facingRight = faceRight;
 	this->isAGear = true;
 }
 
 void GearBit::flip() {
-	this->facingRight = !this->facingRight;
+	this->toggleFacingRight();
+	this->updateOrientation();
 }
 
-GearBit::GearBit(bool faceRight) {
+GearBit::GearBit(bool faceRight, sf::Texture& txtr) {
 	this->initLogic(faceRight);
-	this->initSprite(this->colour, this->position);
+	this->initTexture(txtr);
+	this->initSprite(this->position);
 }
 
 int GearBit::checkDropSide(int fallSide) {
-	this->facingRight = !this->facingRight;
+	this->toggleFacingRight();
 	if (!this->facingRight) {
 		return 5;
 	}
@@ -141,14 +165,14 @@ int GearBit::checkDropSide(int fallSide) {
 
 void Gear::initLogic(bool main, bool faceRight) {
 	this->connectedNode = NULL;
-	//this->onButton = true;
 	this->held = false;
 	this->mainComponent = main;
 	this->isAGear = true;
 	this->facingRight = faceRight;
 }
 
-Gear::Gear(bool faceRight) {
+Gear::Gear(bool faceRight, sf::Texture& txtr) {
 	this->initLogic(this->mainComponent, faceRight);
-	this->initSprite(this->colour, this->position);
+	this->initTexture(txtr);
+	this->initSprite(this->position);
 }
