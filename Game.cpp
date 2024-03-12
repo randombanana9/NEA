@@ -5,7 +5,6 @@
 #include "Component.hpp"
 #include "Graph.hpp"
 
-
 void Game::initWindow() {
 	this->settings.antialiasingLevel = 8;
 	this->videoMode.width = 1600; //These two lines set the width and height of the window.
@@ -111,7 +110,7 @@ void Game::initText() {
 	this->infoText.setFillColor(sf::Color::Black);
 	this->infoText.setFont(this->font);
 	this->infoText.setPosition(sf::Vector2f(1100.f, 20.f));
-	this->infoText.setString("Lorem Ipsum Dolor");
+	this->infoText.setString("Welcome to the Turing Tumble\nSimulator NEA.\n\nTo get started, drag components\nfrom the menu on the left onto the\nboard. You can change their\norientation using the flip button\nin the bottom left.\nYou can adjust the number of\nmarbles in each hopper by\nusing the buttons to their sides.\n\nOnce you are ready, click the\n\"Start\" button to begin simulating\nthe Tumble.");
 
 	this->partsMenuText[0].setString("Ramp");
 	this->partsMenuText[1].setString("Crossover");

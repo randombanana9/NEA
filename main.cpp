@@ -3,7 +3,6 @@
 #include "Game.hpp"
 
 int main() {
-
     Game game; //initialises the game engine
 
     while (game.running()) {
