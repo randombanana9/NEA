@@ -8,8 +8,6 @@ class Graph;
 
 class Game {
 private:
-	sf::Sprite test;
-
 	//private variables related to the window
 	sf::ContextSettings settings;
 	sf::RenderWindow* window;

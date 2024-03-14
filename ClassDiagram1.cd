@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Board" Collapsed="true">
+    <Position X="2.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gQIoBoAAgKQIAQYAYACECIJCkABAAIgAMQgVAaUAIAA=</HashCode>
+      <FileName>Board.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Bit" Collapsed="true">
+    <Position X="6.75" Y="2.75" Width="1.5" />
+    <InheritanceLine Type="Component" ManuallyRouted="true">
+      <Path>
+        <Point X="5.5" Y="2.312" />
+        <Point X="5.5" Y="2.596" />
+        <Point X="7.5" Y="2.596" />
+        <Point X="7.5" Y="2.75" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAIAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Component.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Component" Collapsed="true">
+    <Position X="4.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAGAAQAAgCAAAAABQBAAACKAAFAYAgAACAAAAAAIAQA=</HashCode>
+      <FileName>Component.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Crossover" Collapsed="true">
+    <Position X="6.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAAAAIAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Component.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Game">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AkIogQkEkSQAUYFSGAGAACRkGArCEAgIYaAjjAAUBIg=</HashCode>
+      <FileName>Game.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Gear" Collapsed="true">
+    <Position X="2.75" Y="2.75" Width="1.5" />
+    <InheritanceLine Type="Component" ManuallyRouted="true">
+      <Path>
+        <Point X="5.5" Y="2.312" />
+        <Point X="5.5" Y="2.627" />
+        <Point X="3.5" Y="2.627" />
+        <Point X="3.5" Y="2.75" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAICIAAAAAAAAAAAAAAAAIAQA=</HashCode>
+      <FileName>Component.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GearBit" Collapsed="true">
+    <Position X="4.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAQAAICIABAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Component.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Graph" Collapsed="true">
+    <Position X="8.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAAAQAAAAAAAADIAAAAAgAAAEAAAAAAAA=</HashCode>
+      <FileName>Graph.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Interceptor" Collapsed="true">
+    <Position X="6.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAIEAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Component.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Node" Collapsed="true">
+    <Position X="2.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAEEABAAAIAgABAQAAAAQAAAAAEAwAA=</HashCode>
+      <FileName>Node.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ramp" Collapsed="true">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAIAAAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Component.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

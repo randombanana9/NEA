@@ -220,21 +220,27 @@ void Game::updatePartsMenu() {
 				switch (i) {
 				case 1:
 					newComp = new Ramp(this->facingRight, this->rampTexture); //Dyanmic OOP Here!!!!
+					this->setInfo("The ramp component always faces in\nthe same direction, and will\nalways drop a marble in that\ndirection.\nIt can only be placed on a main\nnode.");
 					break;
 				case 2:
 					newComp = new Crossover(this->facingRight, this->crossoverTexture);
+					this->setInfo("The crossover will drop a marble on\nthe opposite side to the side from\nwhich the marble dropped.\nIt can only be placed on a main\nnode.");
 					break;
 				case 3:
 					newComp = new Interceptor(this->facingRight, this->interceptorTexture);
+					this->setInfo("The interceptor will halt the\nsimulation, stopping the marble\nwhere it is.\nIt can only be placed on a main\nnode.");
 					break;
 				case 4:
 					newComp = new Bit(this->facingRight, this->bitTexture);
+					this->setInfo("The bit faces in a direction, and\ndrops a marble in that direction\nbefore switching directions.\nIt can only be placed on a main\nnode.");
 					break;
 				case 5:
 					newComp = new GearBit(this->facingRight, this->gearBitTexture);
+					this->setInfo("The gear bit faces in a direction,\nand drops a marble in that\ndirection before switching\ndirections. All connected gears\nwill always face the same\ndirection.\nA gear bit can only be placed on a\nmain node");
 					break;
 				case 6:
 					newComp = new Gear(this->facingRight, this->gearTexture);
+					this->setInfo("Gears connect gear bits to each\nother.\nThey can be placed on any node.");
 					break;
 				default:
 					this->facingRight = !this->facingRight;
@@ -260,11 +266,13 @@ void Game::updateButtons() {
 		this->placementMode = !this->placementMode;
 		if (this->placementMode) {
 			this->endSim();
+			this->setInfo("Welcome to the Turing Tumble\nSimulator NEA.\n\nTo get started, drag components\nfrom the menu on the left onto the\nboard. You can change their\norientation using the flip button\nin the bottom left.\nYou can adjust the number of\nmarbles in each hopper by\nusing the buttons to their sides.\n\nOnce you are ready, click the\n\"Start\" button to begin simulating\nthe Tumble.");
 		}
 		else {
 			this->runButtonText.setString("Stop");
 			this->runButtonText.setOrigin(sf::Vector2f(this->runButtonText.getLocalBounds().getSize().x / 2, this->runButtonText.getLocalBounds().getSize().y / 2)); //Sets the origin of the text to the centre of the text
 			this->runButtonText.setPosition(sf::Vector2f(1203.f, 515.f));
+			this->setInfo("To start the simulation, click\non one of the levers at the bottom\nof the board.\nYou can return to placement mode\nby clicking the \'Stop\' button.\n\nThe simulation will stop under\ncertain conditions. These are:\nthe marble drops off the side,\nand the marble drops onto an\nempty node or a gear.");
 		}
 	}
 	if (this->click) {
@@ -301,18 +309,20 @@ void Game::updateLevers() {
 			this->currentNode = this->leftRoot;
 			this->startedSimulation = true;
 			this->board->setMarbleColour(sf::Color::Blue);
-			this->dropSide = 0;
+			this->dropSide = 1;
 			this->board->setMarblePosition(sf::Vector2f(485.f, 120.f));
 			this->leftHopperStored = this->leftHopperStoredPreRun - 1;
+			this->rightHopperStored = this->rightHopperStoredPreRun;
 			this->board->setLeftHopperTxt(std::to_string(this->leftHopperStored));
 		}
 		else if (this->board->getRightLeverBounds().contains(this->mousePosView)) {
 			this->currentNode = this->rightRoot;
 			this->startedSimulation = true;
 			this->board->setMarbleColour(sf::Color::Red);
-			this->dropSide = 1;
+			this->dropSide = 0;
 			this->board->setMarblePosition(sf::Vector2f(725.f, 120.f));
 			this->rightHopperStored = this->rightHopperStoredPreRun - 1;
+			this->leftHopperStored = this->leftHopperStoredPreRun;
 			this->board->setRightHopperTxt(std::to_string(this->rightHopperStored));
 		}
 	}
@@ -328,11 +338,13 @@ void Game::updateSimulation() {
 
 				nodeIndex = this->currentNode->getNodeIndex();
 				currentComp = this->board->getNodeComponent(nodeIndex);
-
+				
 				if (this->board->getNodeComponent(nodeIndex) == NULL) { //If there is no component at the current node
 					this->endSim();
+					this->setInfo("Marble must drop onto a component\nor lever.\nSimulation aborted.");
 					return;
 				}
+				
 
 				if (this->updateGears) {
 					this->updateConnectedGears(currentComp, currentComp->getFacingRight());
@@ -387,21 +399,28 @@ void Game::updateSimulation() {
 					}
 					else { //If the marble has gone off the side
 						this->endSim();
+						this->setInfo("The marble has dropped off the side of the board.\nSimulation aborted.");
 						return;
 					}
 				}
+				
 				if (this->board->getNodeComponent(nodeIndex) == NULL) { //If there is no component at the current node
 					this->endSim();
+					this->setInfo("Marble must drop onto a component\nor lever.\nSimulation aborted.");
 					return;
 				}
+				
 
 				nodeIndex = this->currentNode->getNodeIndex();
 				currentComp = this->board->getNodeComponent(nodeIndex);
 
+				
 				if (currentComp == NULL) { //if the component is NULL (The node is empty) the game will go back to placement mode
 					this->endSim();
+					this->setInfo("Marble must drop onto a component\nor lever.\nSimulation aborted.");
 					return;
 				}
+				
 
 				this->board->setMarblePosition(this->board->getNodePosition(nodeIndex));
 				this->dropSide = currentComp->checkDropSide(1 - this->dropSide); //the 'drop side' is opposite to the 'fall side' so this->dropSide is subtracted from 1 to get fallSide
@@ -409,7 +428,11 @@ void Game::updateSimulation() {
 
 				if (this->dropSide == 6) {
 					this->intercepted = true;
-					this->setInfo("Intercepted");
+					this->setInfo("Intercepted.\n\nClick the \'Stop\' button to return\nto placement mode.");
+				}if (this->dropSide == 7) {
+					this->endSim();
+					this->setInfo("Marble cannot drop onto a gear.\nSimulation aborted.");
+					return;
 				}
 				if (this->dropSide == 4 || this->dropSide == 5) {
 					this->updateGears = true;
@@ -496,11 +519,11 @@ void Game::updateConnectedGears(Component* currentComp, bool newFacingRight) {
 				continue;
 			}
 		}if (i == 1) {
-			if (index / 11 == 0) {
+			if (index % 11 == 10) {
 				continue;
 			}
 		}if (i == 2) {
-			if (index % 11 == 10) {
+			if (index / 11 == 0) {
 				continue;
 			}
 		}if (i == 3) {
@@ -565,17 +588,6 @@ Game::Game() {
 	this->initFonts();
 	this->initText();
 	this->initLogic();
-
-	/*
-	this->test.setTexture(this->gearTexture);
-	this->test.setScale(sf::Vector2f(1.f / 15, 1.f / 15));
-
-	float a = this->test.getScale().x;
-	float b = this->test.getTexture()->getSize().x * a;
-
-	this->test.setOrigin(sf::Vector2f(b/2, b/2));
-	this->test.setPosition(sf::Vector2f(307.f, 193.f));
-	*/
 }
 
 Game::~Game() {
@@ -621,8 +633,6 @@ void Game::render() {
 	if (startedSimulation) {
 		this->drawMarbles();
 	}
-
-	this->window->draw(this->test);
 
 	//displays the new frame
 	this->window->display();

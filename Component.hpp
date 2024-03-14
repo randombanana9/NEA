@@ -98,4 +98,6 @@ class Gear : public Component { //Inheritance here!!!!
 public:
 
 	Gear(bool faceRight, sf::Texture& txtr);
+
+	virtual int checkDropSide(int fallSide);
 };

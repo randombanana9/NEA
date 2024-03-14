@@ -141,7 +141,6 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Resources\SFML-2.6.1\include</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Resources\SFML-2.6.1\include</AdditionalIncludeDirectories>
     </ClCompile>
-    <ClCompile Include="Marble.cpp" />
     <ClCompile Include="Node.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -149,12 +148,12 @@
     <ClInclude Include="Component.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="Graph.hpp" />
-    <ClInclude Include="Marble.hpp" />
     <ClInclude Include="Node.hpp" />
     <ClInclude Include="source.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

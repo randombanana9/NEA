@@ -6,7 +6,7 @@ class Component;
 
 class Node {
 private:
-	sf::RectangleShape sprite; //TEMP - will be a sprite type later
+	sf::RectangleShape sprite; 
 	bool mainNode; //for whether all components can be placed on the node, or just gears
 	sf::Vector2f pos;
 

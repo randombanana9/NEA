@@ -176,3 +176,7 @@ Gear::Gear(bool faceRight, sf::Texture& txtr) {
 	this->initTexture(txtr);
 	this->initSprite(this->position);
 }
+
+int Gear::checkDropSide(int fallSide) {
+	return 7;
+}
