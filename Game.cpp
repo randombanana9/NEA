@@ -5,7 +5,7 @@
 #include "Component.hpp"
 #include "Graph.hpp"
 
-void Game::initWindow() {
+void Game::initWindow() { //Initialises the game window
 	this->settings.antialiasingLevel = 8;
 	this->videoMode.width = 1600; //These two lines set the width and height of the window.
 	this->videoMode.height = 900;
@@ -13,7 +13,7 @@ void Game::initWindow() {
 	this->window->setFramerateLimit(60);
 }
 
-void Game::initObjects() {
+void Game::initObjects() { //Initialises game objects
 	this->partsMenu[0].setSize(sf::Vector2f(116, 896.f));
 	this->partsMenu[0].setPosition(sf::Vector2f(2.f, 2.f));
 	this->partsMenu[0].setFillColor(sf::Color::White);
@@ -66,7 +66,7 @@ void Game::initObjects() {
 	}
 }
 
-void Game::initLogic() {
+void Game::initLogic() { //Initialises variablse used in thegame's logic
 	this->mouseHeld = false; //For detecting if the mouse button in held for more than one frame
 	this->click = false; //Stores if the mouse was pressed down this frame
 	this->heldComponent = NULL; //Stores a pointer to the currently held component (NULL if not holding a component)
@@ -86,7 +86,7 @@ void Game::initLogic() {
 	this->updateGears = false; //Used to store if gears need to be updated next tick of the simulation.
 }
 
-void Game::initTextures() {
+void Game::initTextures() { //Initialises the textures used by sprites
 	this->rampTexture.loadFromFile("Resources/Ramp.png");
 	this->rampTexture.setSmooth(true);
 	this->crossoverTexture.loadFromFile("Resources/Crossover.png");
@@ -101,11 +101,11 @@ void Game::initTextures() {
 	this->gearTexture.setSmooth(true);
 }
 
-void Game::initFonts() {
+void Game::initFonts() { //Initialises the font used by text
 	this->font.loadFromFile("Resources/Sans-Mono.ttf"); //Loads the font to be used for text
 }
 
-void Game::initText() {
+void Game::initText() { //Initialises the text objects
 	this->infoText.setCharacterSize(24);
 	this->infoText.setFillColor(sf::Color::Black);
 	this->infoText.setFont(this->font);
@@ -138,7 +138,7 @@ void Game::initText() {
 	this->runButtonText.setPosition(sf::Vector2f(1203.f, 515.f));
 }
 
-void Game::pollEvents() {
+void Game::pollEvents() { //Checks for events which have heppened during the last frame
 	while (this->window->pollEvent(this->ev)) {
 		if (this->ev.type == sf::Event::Closed) { //checks if the close button at the top right of the window has been pressed
 			this->window->close();
@@ -159,13 +159,13 @@ void Game::pollEvents() {
 	}
 }
 
-void Game::updateMousePos() {
+void Game::updateMousePos() { //updates the variables which store the mouse position
 	//takes the current mouse position and stores it in these variables
 	this->mousePosWindow = sf::Mouse::getPosition(*this->window); //pixel position of the mouse
 	this->mousePosView = this->window->mapPixelToCoords(this->mousePosWindow); //coordinate position of the mouse
 }
 
-void Game::updateComponents() {
+void Game::updateComponents() { //Updates any component items which need to be updated, deals with placing, moving, and deleting components
 	if (this->heldComponent != NULL) { //Checks if there is a component being held
 		for (auto& e : this->components) {
 			if (e == this->heldComponent) {
@@ -212,7 +212,7 @@ void Game::updateComponents() {
 	}
 }
 
-void Game::updatePartsMenu() {
+void Game::updatePartsMenu() { //Checks if any options in the parts menu have been clicked, and updates the game accordingly
 	for (int i = 1; i < 8; i++) {
 		if (this->partsMenu[i].getGlobalBounds().contains(this->mousePosView)) {
 			if (this->click) {
@@ -261,7 +261,7 @@ void Game::updatePartsMenu() {
 	}
 }
 
-void Game::updateButtons() {
+void Game::updateButtons() { //Checks if any of the buttons in the game have been clicked, and updates the game accordingly
 	if (this->click && this->runButton.getGlobalBounds().contains(this->mousePosView)) {
 		this->placementMode = !this->placementMode;
 		if (this->placementMode) {
@@ -303,7 +303,7 @@ void Game::updateButtons() {
 	}
 }
 
-void Game::updateLevers() {
+void Game::updateLevers() { //Checks for if levers have been clicked to start the simulation
 	if (this->click && !this->startedSimulation) {
 		if (this->board->getLeftLeverBounds().contains(this->mousePosView)) {
 			this->currentNode = this->leftRoot;
@@ -328,12 +328,12 @@ void Game::updateLevers() {
 	}
 }
 
-void Game::updateSimulation() {
+void Game::updateSimulation() { //Updates the simulation, moving along its progress. Updates happen once every 60 frames (once per second)
 	if (!this->intercepted) {
 		int nodeIndex;
 		Component* currentComp;
 		if (!this->stopped && !this->intercepted) {
-			if (this->framesSinceSimUpdate >= 60) {
+			if (this->framesSinceSimUpdate >= 60) { //if 1 second has passed (program runs at 60fps)
 				this->framesSinceSimUpdate = 0;
 
 				nodeIndex = this->currentNode->getNodeIndex();
@@ -463,7 +463,7 @@ void Game::endSim() { //Puts the game back into placement mode, and resets the r
 	this->board->clearFallen();
 }
 
-void Game::placeComponent(int index) {
+void Game::placeComponent(int index) { //Deals with placing a component on a node
 	Component* oldComp = board->getNodeComponent(index);
 	board->setNodeComponent(index, this->heldComponent);
 
@@ -481,7 +481,7 @@ void Game::placeComponent(int index) {
 	this->heldComponent = oldComp;
 }
 
-void Game::deleteHeldComponent() {
+void Game::deleteHeldComponent() { //Deletes the held component
 	for (int i = 0; i < this->components.size(); i++) {
 		if (this->components[i] == this->heldComponent) {
 			delete this->components[i];
@@ -491,7 +491,7 @@ void Game::deleteHeldComponent() {
 	}
 }
 
-void Game::updateConnectedGears(Component* currentComp, bool newFacingRight) {
+void Game::updateConnectedGears(Component* currentComp, bool newFacingRight) { //Reccursive function which runs a depth first traversal to update any connected gears to a given orientation
 	int index;
 	for (int i = 0; i < this->board->getNodesLength(); i++) {
 		if (this->board->getNodeComponent(i) == currentComp) {
@@ -542,11 +542,11 @@ void Game::updateConnectedGears(Component* currentComp, bool newFacingRight) {
 	}
 }
 
-void Game::setInfo(std::string newString) {
+void Game::setInfo(std::string newString) { //Updates the string displayed in the information box in the top right of the screen
 	this->infoText.setString(newString);
 }
 
-void Game::drawObjects() {
+void Game::drawObjects() { //Draws objects from the screen
 	for (int i = 0; i < 8; i++) {
 		this->window->draw(this->partsMenu[i]);
 	}
@@ -559,7 +559,7 @@ void Game::drawObjects() {
 	this->window->draw(this->runButton);
 }
 
-void Game::drawText() {
+void Game::drawText() { //Draws text to the screen
 	this->window->draw(this->infoText);
 
 	for (int i = 0; i < 7; i++) {
@@ -569,19 +569,19 @@ void Game::drawText() {
 	this->window->draw(this->runButtonText);
 }
 
-void Game::drawHeld() {
+void Game::drawHeld() { //Draws the held component to the screen, this allows the held component to appear in front of all other objects, even if normally a component may be drawn behind
 	if (this->heldComponent != NULL) {
 		this->window->draw(this->heldComponent->getSprite());
 	}
 }
 
-void Game::drawMarbles() {
+void Game::drawMarbles() { //Draws the marble to the screen
 	if (!this->stopped) {
 		this->window->draw(this->board->getMarble());
 	}
 }
 
-Game::Game() {
+Game::Game() { //Constructor, calls all initialisation functions
 	this->initWindow();
 	this->initObjects();
 	this->initTextures();
@@ -590,7 +590,7 @@ Game::Game() {
 	this->initLogic();
 }
 
-Game::~Game() {
+Game::~Game() { //Destructor, deallocates all memory allocated by new
 	delete this->window;
 	delete this->board;
 	for (auto& e : this->components) {
@@ -605,7 +605,7 @@ const bool Game::running() const {
 	return this->window->isOpen(); //checks if the application window is open
 }
 
-void Game::update() {
+void Game::update() { //Master update function, called 60 times per second and calls all functions required to update the state of the game
 	this->pollEvents();
 	this->updateMousePos();
 	if (this->placementMode) {
@@ -621,7 +621,7 @@ void Game::update() {
 	this->updateButtons();
 }
 
-void Game::render() {
+void Game::render() { //Master render function, called 60 times per second and calls all functions required to draw all visuals to the screen
 	//Clears the window and sets a background colour
 	this->window->clear(sf::Color(239, 239, 239, 255));
 

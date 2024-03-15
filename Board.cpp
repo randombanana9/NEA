@@ -3,7 +3,7 @@
 #include "Board.hpp"
 #include "Node.hpp"
 
-void Board::initObjects() {
+void Board::initObjects() { //Initialises the game objects stored in the board
 	board = new bool[this->boardSize*this->boardSize];
 	//Set every other node in the board to a main node
 	for (int i = 0; i < this->boardSize * this->boardSize; i++) {
@@ -23,7 +23,7 @@ void Board::initObjects() {
 	this->marble.setPosition(sf::Vector2f(375.f, 260.f));
 }
 
-void Board::initBorder() {
+void Board::initBorder() { //Initialises the border of the board
 	this->border.setFillColor(sf::Color::White);
 	this->border.setSize(sf::Vector2f(this->width, this->height));
 	this->border.setPosition(sf::Vector2f(this->xPos, this->yPos));
@@ -31,7 +31,7 @@ void Board::initBorder() {
 	this->border.setOutlineThickness(2.f);
 }
 
-void Board::initLevers() {
+void Board::initLevers() { //Initialises the levers at the bottom of the board
 	this->leftLever.setFillColor(sf::Color::Blue);
 	this->leftLever.setOutlineColor(sf::Color::Black);
 	this->leftLever.setOutlineThickness(1.f);
@@ -50,11 +50,11 @@ void Board::initLevers() {
 }
 
 
-void Board::initFont(sf::Font& font) {
+void Board::initFont(sf::Font& font) { //Initialises the font to be used by text on the board
 	this->font = font;
 }
 
-void Board::initHoppers() {
+void Board::initHoppers() { //Initialises the hoppers at the top of the board
 	this->leftHopper[1].setFillColor(sf::Color::White);
 	this->leftHopper[1].setOutlineColor(sf::Color::Black);
 	this->leftHopper[1].setOutlineThickness(1.f);
@@ -127,7 +127,7 @@ void Board::initHoppers() {
 	this->rightHopperMarble.setPosition(sf::Vector2f(725.f, 120.f));
 }
 
-void Board::initNodes() {
+void Board::initNodes() { //Initialises the nodes on the board
 	for (int i = 0; i < (this->boardSize * this->boardSize); i++) {
 		sf::Vector2f pos = sf::Vector2f(this->xPos + 130.f + 55.f*(i%this->boardSize),
 										this->yPos + 150.f + 55.f*(i/this->boardSize));
@@ -137,16 +137,16 @@ void Board::initNodes() {
 	this->node = NULL;
 }
 
-void Board::drawBorder(sf::RenderWindow& window) {
+void Board::drawBorder(sf::RenderWindow& window) { //Draws the board border to the screen
 	window.draw(this->border);
 }
 
-void Board::drawLevers(sf::RenderWindow& window) {
+void Board::drawLevers(sf::RenderWindow& window) { //Draws the levers to the screen
 	window.draw(this->leftLever);
 	window.draw(this->rightLever);
 }
 
-void Board::drawHoppers(sf::RenderWindow& window) {
+void Board::drawHoppers(sf::RenderWindow& window) { //Draws the hoppers to the screen
 	for (int i = 0; i < 3; i++) {
 		window.draw(this->leftHopper[i]);
 		window.draw(this->rightHopper[i]);
@@ -166,19 +166,19 @@ void Board::drawHoppers(sf::RenderWindow& window) {
 
 }
 
-void Board::drawNodes(sf::RenderWindow& window) {
+void Board::drawNodes(sf::RenderWindow& window) { //Draws the nodes to the screen
 	for (auto& e : this->nodes) {
 		window.draw(e->getSprite());
 	}
 }
 
-void Board::drawFallen(sf::RenderWindow& window) {
+void Board::drawFallen(sf::RenderWindow& window) { //Draws the fallen marbles to the screen
 	for (auto& e : this->fallenMarbles) {
 		window.draw(e);
 	}
 }
 
-Board::Board(sf::Font& font) : font(font) {
+Board::Board(sf::Font& font) : font(font) { //Constructor, calls all initialisation function
 	this->initObjects();
 	this->initBorder();
 	this->initLevers();
@@ -187,62 +187,62 @@ Board::Board(sf::Font& font) : font(font) {
 	this->initNodes();
 }
 
-Board::~Board() {
+Board::~Board() { //Destructor, deallocates memory allocated by new
 	for (auto& e : this->nodes) {
 		delete e;
 	}
 	delete[] board;
 }
 
-int Board::getNodesLength() {
+int Board::getNodesLength() { //Returns the number of nodes on the board
 	return this->nodes.size();
 }
 
-Component* Board::getNodeComponent(int index) {
+Component* Board::getNodeComponent(int index) { //Returns the component on the node at the given index
 	return this->nodes[index]->getComponent();
 }
 
-sf::Vector2f Board::getNodePosition(int index) {
+sf::Vector2f Board::getNodePosition(int index) { //Returns the position of the node at the given index
 	return this->nodes[index]->getSprite().getPosition();
 }
 
-sf::FloatRect Board::getLeftLeverBounds() {
+sf::FloatRect Board::getLeftLeverBounds() { //Returns the rectangle which bounds the left lever
 	return this->leftLever.getGlobalBounds();
 }
 
-sf::FloatRect Board::getRightLeverBounds() {
+sf::FloatRect Board::getRightLeverBounds() { //Returns the rectangle which bounds the right lever
 	return this->rightLever.getGlobalBounds();
 }
 
-bool Board::getNodeMainNode(int index) {
+bool Board::getNodeMainNode(int index) { //Returns whether a node is a main node
 	return this->nodes[index]->getMainNode();
 }
 
-sf::CircleShape Board::getMarble() {
+sf::CircleShape Board::getMarble() { //Returns the active marble
 	return this->marble;
 }
 
-sf::CircleShape Board::getFallenMarbles(int index) {
+sf::CircleShape Board::getFallenMarbles(int index) { //Returns the fallen marble at the given index
 	return this->fallenMarbles[index];
 }
 
-void Board::setNodeComponent(int index, Component* component) {
+void Board::setNodeComponent(int index, Component* component) { //Sets the component stored at the given node
 	this->nodes[index]->setComponent(component);
 }
 
-void Board::setMarbleColour(sf::Color col) {
+void Board::setMarbleColour(sf::Color col) { //Changes the colour of the active marble
 	this->marble.setFillColor(col);
 }
 
-void Board::setMarblePosition(sf::Vector2f pos) {
+void Board::setMarblePosition(sf::Vector2f pos) { //Changes the position of the active marble
 	this->marble.setPosition(pos);
 }
 
-void Board::setLeftHopperTxt(std::string newStr) {
+void Board::setLeftHopperTxt(std::string newStr) { //Changes the text displayed in the left hopper
 	int oldLength = this->leftHopperTxt[1].getString().getSize();
 	int newLength = newStr.length();
 
-	if (oldLength < newLength) {
+	if (oldLength < newLength) { //Offsets the text based on whether the number stored is one digit or two digits
 		this->leftHopperTxt[1].move(sf::Vector2f(-8.f, 0));
 	}
 	else if (oldLength > newLength) {
@@ -252,11 +252,11 @@ void Board::setLeftHopperTxt(std::string newStr) {
 	this->leftHopperTxt[1].setString(newStr);
 }
 
-void Board::setRightHopperTxt(std::string newStr) {
+void Board::setRightHopperTxt(std::string newStr) { //Changes the text displayed in the right hopper
 	int oldLength = this->rightHopperTxt[1].getString().getSize();
 	int newLength = newStr.length();
 
-	if (oldLength < newLength) {
+	if (oldLength < newLength) {//Offsets the text based on whether the number stored is one digit or two digits
 		this->rightHopperTxt[1].move(sf::Vector2f(-8.f, 0));
 	}
 	else if (oldLength > newLength) {
@@ -266,21 +266,21 @@ void Board::setRightHopperTxt(std::string newStr) {
 	this->rightHopperTxt[1].setString(newStr);
 }
 
-void Board::clearFallen() {
+void Board::clearFallen() { //Empties the vector of fallen marbles
 	this->fallenMarbles.clear();
 }
 
-void Board::pushFallen() {
+void Board::pushFallen() { //Pushes a deep copy of the active marble to the end of fallenMarbles, and places it in the line of fallen marbles at the bottom of the screen
 	int numFallen = this->fallenMarbles.size();
 	this->marble.setPosition(sf::Vector2f(this->xPos + this->width - 8 - 15*(numFallen%53), this->yPos + this->height - 8 - 15*(numFallen/53)));
 	this->fallenMarbles.push_back(this->marble);
 }
 
-bool Board::checkIfIntersectingNode(int index, sf::Vector2f coords) {
+bool Board::checkIfIntersectingNode(int index, sf::Vector2f coords) { //Returns if a set of coordinates intersects with a given node
 	return this->nodes[index]->getSprite().getGlobalBounds().contains(coords);
 }
 
-bool Board::checkIfIntersectingButton(bool right, int index, sf::Vector2f coords) {
+bool Board::checkIfIntersectingButton(bool right, int index, sf::Vector2f coords) { //Returns if a set of coordinates intersects one of the hopper buttons
 	if (right) {
 		if (this->rightHopper[index].getGlobalBounds().contains(coords)) {
 			return true;
@@ -294,7 +294,7 @@ bool Board::checkIfIntersectingButton(bool right, int index, sf::Vector2f coords
 	return false;
 }
 
-void Board::drawBoard(sf::RenderWindow& window) {
+void Board::drawBoard(sf::RenderWindow& window) { //Master function for drawing the board. Calls all draw functions
 	this->drawBorder(window);
 	this->drawLevers(window);
 	this->drawHoppers(window);
